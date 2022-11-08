@@ -656,6 +656,8 @@ main {
     background-repeat: no-repeat;
     -webkit-transform: translateY(-50%);
             transform: translateY(-50%); }
+  .event__type-label::first-letter {
+    text-transform: uppercase; }
   .event__type-label--taxi::before {
     background-image: url("../img/icons/taxi.png"); }
   .event__type-label--bus::before {
