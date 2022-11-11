@@ -12,6 +12,8 @@ import {POINT_OFFERS} from './mock/data.js';
 import {generateDescriptionsData} from './mock/destination.js';
 import {generateTripCitiesArray, getTotalCost, getDateRange} from './mock/trip-info.js';
 
+import {renderTemplate} from './utils.js';
+
 const EVENTS_COUNT = 20;
 
 const events = new Array(EVENTS_COUNT).fill().map(() => generateEventData());
@@ -19,10 +21,6 @@ const tripCities = generateTripCitiesArray(events);
 const tripCost = getTotalCost(events);
 const tripDateRange = getDateRange(events);
 const destinations = generateDescriptionsData();
-
-const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const pageBodyNode = document.querySelector('.page-body');
 const headerInnerNode = pageBodyNode.querySelector('.trip-main');
