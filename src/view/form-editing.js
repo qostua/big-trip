@@ -1,5 +1,14 @@
 import {POINT_TYPES} from '../const.js';
-import {getDateFromDateString} from '../utils.js';
+import {createElement, getFormatedDateFromDateString} from '../utils.js';
+
+const BLANK_FORM_EDITING = {
+  type: 'flight',
+  offers: null,
+  destination: null,
+  price: 0,
+  dateFrom: null,
+  dateTo: null,
+};
 
 const createPointTypesList = (currentType) => (
   POINT_TYPES.map((pointType) => `<div class="event__type-item">
@@ -88,25 +97,16 @@ const createRollupBtn = (isEditingForm = false) => {
   </button>`;
 };
 
-export const createPointEditingTemplate = (destinationsData = [], offersData = [], pointData = {}) => {
-  const isEditingForm = 'type' in pointData;
-
-  const {
-    type = 'flight',
-    offers = null,
-    destination,
-    price = 0,
-    dateFrom = null,
-    dateTo = null,
-  } = pointData;
-
+const createPointEditingTemplate = (destinationsData = [], offersData = [], pointData = {}) => {
+  const isEditingForm = pointData.dateFrom !== null;
+  const {type, offers, destination, price, dateFrom, dateTo} = pointData;
 
   const name = (destination) ? destination.name : '';
   const description = (destination) ? destination.description : null;
   const pictures = (destination) ? destination.pictures : null;
 
-  const startDate = (dateFrom) ? getDateFromDateString(dateFrom) : '';
-  const endDate = (dateTo) ? getDateFromDateString(dateTo) : '';
+  const startDate = (dateFrom) ? getFormatedDateFromDateString(dateFrom, 'DD/MM/YY HH:ss') : '';
+  const endDate = (dateTo) ? getFormatedDateFromDateString(dateTo, 'DD/MM/YY HH:ss') : '';
 
   const pointOffers = offersData.find((item) => item['type'] === type)['offers'];
 
@@ -168,3 +168,27 @@ export const createPointEditingTemplate = (destinationsData = [], offersData = [
   </li>`;
 };
 
+export default class PointEditing {
+  constructor(destinationsData = {}, offersData = [], pointData = BLANK_FORM_EDITING) {
+    this._element = null;
+    this._destinationsData = destinationsData;
+    this._pointData = pointData;
+    this._offersData = offersData;
+  }
+
+  getTemplate() {
+    return createPointEditingTemplate(this._destinationsData, this._offersData, this._pointData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

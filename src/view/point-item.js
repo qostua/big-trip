@@ -1,7 +1,7 @@
 import {
+  createElement,
   getDatesDifferencePerMs,
-  getDayFromDateString,
-  getTimeFromDateString,
+  getFormatedDateFromDateString,
   msToHumanizeTime
 } from '../utils.js';
 
@@ -11,14 +11,14 @@ const createOffersList = (offers) => offers.map((offer) => `<li class="event__of
   <span class="event__offer-price">${offer.price}</span>
 </li>`).join('');
 
-export const createPointTemplate = (pointData) => {
+const createPointTemplate = (pointData) => {
   const {type, offers, destination, price, isFavorite, dateFrom, dateTo} = pointData;
 
   const name = destination.name;
 
-  const day = getDayFromDateString(dateFrom);
-  const startTime = getTimeFromDateString(dateFrom);
-  const endTime = getTimeFromDateString(dateTo);
+  const day = getFormatedDateFromDateString(dateFrom, 'MMM D');
+  const startTime = getFormatedDateFromDateString(dateFrom, 'HH:MM');
+  const endTime = getFormatedDateFromDateString(dateTo, 'HH:MM');
   const timeDiff = msToHumanizeTime(getDatesDifferencePerMs(dateFrom, dateTo));
 
   const favoriteClassName = (isFavorite) ? 'event__favorite-btn--active' : '';
@@ -32,9 +32,9 @@ export const createPointTemplate = (pointData) => {
       <h3 class="event__title">${type} ${name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">${startTime}</time>
+          <time class="event__start-time" datetime="${startTime}">${startTime}</time>
           &mdash;
-          <time class="event__end-time" datetime="2019-03-18T11:00">${endTime}</time>
+          <time class="event__end-time" datetime="${endTime}">${endTime}</time>
         </p>
         <p class="event__duration">${timeDiff}</p>
       </div>
@@ -57,3 +57,26 @@ export const createPointTemplate = (pointData) => {
     </div>
   </li>`;
 };
+
+export default class Point {
+  constructor(pointData) {
+    this._element = null;
+    this._pointData = pointData;
+  }
+
+  getTemplate() {
+    return createPointTemplate(this._pointData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
