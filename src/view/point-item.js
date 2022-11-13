@@ -20,21 +20,22 @@ const createPointTemplate = (pointData) => {
   const startTime = getFormatedDateFromDateString(dateFrom, 'HH:MM');
   const endTime = getFormatedDateFromDateString(dateTo, 'HH:MM');
   const timeDiff = msToHumanizeTime(getDatesDifferencePerMs(dateFrom, dateTo));
+  const datetimeEventData = getFormatedDateFromDateString(dateFrom, '2019-03-18');
 
   const favoriteClassName = (isFavorite) ? 'event__favorite-btn--active' : '';
 
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="2019-03-18">${day}</time>
+      <time class="event__date" datetime="${datetimeEventData}">${day}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${startTime}">${startTime}</time>
+          <time class="event__start-time" datetime="${datetimeEventData}T${startTime}">${startTime}</time>
           &mdash;
-          <time class="event__end-time" datetime="${endTime}">${endTime}</time>
+          <time class="event__end-time" datetime="${datetimeEventData}T${endTime}">${endTime}</time>
         </p>
         <p class="event__duration">${timeDiff}</p>
       </div>
