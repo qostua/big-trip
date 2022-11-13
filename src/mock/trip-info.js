@@ -10,6 +10,10 @@ export const generateTripCitiesArray = (events) => {
 export const getTotalCost = (events) => events.reduce((currentCost, event) => currentCost + event.price, 0);
 
 export const getDateRange = (events) => {
+  if (events.length === 0) {
+    return;
+  }
+
   const eventSort = events
     .slice()
     .sort((eventA, eventB) => dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom)));
