@@ -22,9 +22,7 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const getDayFromDateString = (dateString) => dayjs(dateString).format('MMM D');
-export const getTimeFromDateString = (dateString) => dayjs(dateString).format('HH:mm');
-export const getDateFromDateString = (dateString) => dayjs(dateString).format('DD/MM/YY HH:ss');
+export const getFormatedDateFromDateString = (dateString, format) => dayjs(dateString).format(format);
 export const getDatesDifferencePerMs = (dateStringFrom, dateStringTo) => dayjs(dateStringTo).diff(dayjs(dateStringFrom));
 export const msToHumanizeTime = (ms) => {
   const totalMinutes = Math.round(ms / 60000);
