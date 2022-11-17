@@ -1,26 +1,10 @@
-import dayjs from 'dayjs';
-
-export const generateTripCitiesArray = (events) => {
+export const generateTripCitiesArray = (points) => {
   const cities = new Set();
 
-  events.forEach((event) => cities.add(event.destination.name));
+  points.forEach((point) => cities.add(point.destination.name));
   return Array.from(cities);
 };
 
-export const getTotalCost = (events) => events.reduce((currentCost, event) => currentCost + event.price, 0);
+export const getTotalCost = (points) => points.reduce((currentCost, point) => currentCost + point.price, 0);
 
-export const getDateRange = (events) => {
-  if (events.length === 0) {
-    return;
-  }
-
-  const eventSort = events
-    .slice()
-    .sort((eventA, eventB) => dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom)));
-
-  const firstDate = dayjs(eventSort[0].dateFrom);
-  const lastDate = dayjs(eventSort[eventSort.length - 1].dateFrom);
-  return (firstDate.month() === lastDate.month())
-    ? `${firstDate.format('MMM D')} - ${lastDate.format('D')}`
-    : `${firstDate.format('MMM D')} - ${lastDate.format('MMM D')}`;
-};
+export const getDateRange = (points) => points.map((point) => point.dateFrom);
