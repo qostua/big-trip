@@ -1,5 +1,4 @@
-import {createElement} from '../utils.js';
-import {FILTERS} from '../const.js';
+import AbstractView from './abstract.js';
 
 const FILTERS = [
   'everthing',
@@ -9,37 +8,25 @@ const FILTERS = [
 
 const createFilterItem = (filter, isChecked) => (
   `<div class="trip-filters__filter">
-    <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" ${index === 0 ? 'checked' : 'disabled'}>
+    <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" ${isChecked ? 'checked' : 'disabled'}>
     <label class="trip-filters__filter-label" for="filter-${filter}">${filter}</label>
   </div>`
-)).join('');
+);
+
+const createFilterList = (filters) => filters
+  .map((filter, index) => createFilterItem(filter, index === 0))
+  .join('');
 
 const createTripFiltersTemplate = () => (
   `<form class="trip-filters" action="#" method="get">
-    ${createFiltersList()}
+    ${createFilterList(FILTERS)}
 
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`
 );
 
-export default class TripFilters {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripFilters extends AbstractView {
   getTemplate() {
     return createTripFiltersTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
