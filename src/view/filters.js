@@ -1,7 +1,13 @@
 import {createElement} from '../utils.js';
 import {FILTERS} from '../const.js';
 
-const createFiltersList = () => FILTERS.map((filter, index) => (
+const FILTERS = [
+  'everthing',
+  'past',
+  'future',
+];
+
+const createFilterItem = (filter, isChecked) => (
   `<div class="trip-filters__filter">
     <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" ${index === 0 ? 'checked' : 'disabled'}>
     <label class="trip-filters__filter-label" for="filter-${filter}">${filter}</label>

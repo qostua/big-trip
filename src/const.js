@@ -9,8 +9,3 @@ export const POINT_TYPES = [
   'sightseeing',
   'restaurant',
 ];
-export const FILTERS = [
-  'everthing',
-  'past',
-  'future',
-];
