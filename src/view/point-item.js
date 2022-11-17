@@ -1,9 +1,9 @@
+import AbstractView from './abstract.js';
 import {
-  createElement,
   getDatesDifferencePerMs,
   getFormatedDateFromDateString,
   msToHumanizeTime
-} from '../utils.js';
+} from '../utils/common.js';
 
 const createOffersList = (offers) => offers.map((offer) => `<li class="event__offer">
   <span class="event__offer-title">${offer.title}</span>
@@ -59,25 +59,29 @@ const createPointTemplate = (pointData) => {
   </li>`;
 };
 
-export default class Point {
+export default class Point extends AbstractView {
   constructor(pointData) {
-    this._element = null;
+    super();
     this._pointData = pointData;
+
+    this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
   }
 
   getTemplate() {
     return createPointTemplate(this._pointData);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _rollupBtnClickHandler(event) {
+    event.preventDefault();
+    this._callback.rollupBtnClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setRollupBtnClickHandler(callback) {
+    this._callback.rollupBtnClick = callback;
+    this
+      .getElement()
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this._rollupBtnClickHandler);
   }
 }
+
