@@ -1,5 +1,6 @@
+import Point from './point-item.js';
+import {getFormatedDateFromDateString} from '../utils/common.js';
 import {POINT_TYPES} from '../const.js';
-import {createElement, getFormatedDateFromDateString} from '../utils.js';
 
 const BLANK_FORM_EDITING = {
   type: 'flight',
@@ -168,27 +169,31 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], poin
   </li>`;
 };
 
-export default class PointEditing {
+export default class PointEditing extends Point {
   constructor(destinationsData = {}, offersData = [], pointData = BLANK_FORM_EDITING) {
-    this._element = null;
+    super();
+
     this._destinationsData = destinationsData;
     this._pointData = pointData;
     this._offersData = offersData;
+
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createPointEditingTemplate(this._destinationsData, this._offersData, this._pointData);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(event) {
+    event.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this
+      .getElement()
+      .querySelector('.event--edit')
+      .addEventListener('submit', this._formSubmitHandler);
   }
 }
