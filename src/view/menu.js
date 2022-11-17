@@ -1,30 +1,28 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
+
+const MENU_ITEMS = [
+  'table',
+  'stats',
+];
+
+const createMenuItemTemplate = (item, isActive) => (
+  `<a class="trip-tabs__btn  ${isActive ? 'trip-tabs__btn--active' : ''}" href="#">
+    ${item}
+  </a>`
+);
+
+const createItemListTemplate = (items) => items
+  .map((item, index) => createMenuItemTemplate(item, index === 1))
+  .join('');
 
 const createSiteMenuTemplate = () => (
   `<nav class="trip-controls__trip-tabs  trip-tabs">
-    <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
-    <a class="trip-tabs__btn" href="#">Stats</a>
+    ${createItemListTemplate(MENU_ITEMS)}
   </nav>`
 );
 
-export default class SiteMenu {
-  constructor() {
-    this._element = null;
-  }
-
+export default class SiteMenu extends AbstractView {
   getTemplate() {
     return createSiteMenuTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
