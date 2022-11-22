@@ -12,7 +12,7 @@ const createMenuItemTemplate = (item, isActive) => (
 );
 
 const createItemListTemplate = (items) => items
-  .map((item, index) => createMenuItemTemplate(item, index === 1))
+  .map((item, index) => createMenuItemTemplate(item, index === 0))
   .join('');
 
 const createSiteMenuTemplate = () => (
