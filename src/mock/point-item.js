@@ -9,7 +9,7 @@ import {
 import {
   EVENT_SITIES,
   DESCRIPTION,
-  POINT_OFFERS
+  POINT_OFFERS_DATA
 } from './data.js';
 import dayjs from 'dayjs';
 
@@ -17,7 +17,7 @@ const MAX_DAYS_GAP = 7;
 const MAX_HOURS_GAP = 4;
 
 const generateOffers = (type) => {
-  const offers = POINT_OFFERS.find((item) => item.type === type)['offers'];
+  const offers = POINT_OFFERS_DATA.find((item) => item.type === type)['offers'];
 
   return getRandomSubArray(offers);
 };
