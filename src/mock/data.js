@@ -11,7 +11,7 @@ export const EVENT_SITIES = [
   'Ufa',
 ];
 
-export const POINT_OFFERS = [
+export const POINT_OFFERS_DATA = [
   {
     'type': 'taxi',
     'offers': [
