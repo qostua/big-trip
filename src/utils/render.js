@@ -15,7 +15,7 @@ export const render = (container, child, place) => {
   }
 
   if (container === null || child === null) {
-    throw new Error('Can\'t render unexisting elements');
+    throw new Error(`Can't render unexisting elements. Container ${container === null ? 'unexist' : 'exist'}, child ${child === null ? 'unexist' : 'exist'}`);
   }
 
   switch (place) {
