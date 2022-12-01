@@ -8,10 +8,12 @@ const Mode = {
 };
 
 export default class Point {
-  constructor(pointListContainer, destinations, offersData) {
+  constructor(pointListContainer, destinations, offersData, changeData, changeMode) {
     this._pointListContainer = pointListContainer;
     this._destinations = destinations;
     this._offersData = offersData;
+    this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._pointComponent = null;
     this._pointEditingComponent = null;
@@ -33,6 +35,7 @@ export default class Point {
     this._pointComponent = new PointView(point);
     this._pointEditingComponent = new PointEditingView(this._destinations, this._offersData, this._point);
 
+    this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._pointComponent.setRollupBtnClickHandler(this._replacePointToForm);
     this._pointEditingComponent.setRollupBtnClickHandler(this._replaceFormToPoint);
     this._pointEditingComponent.setFormSubmitHandler(this._handleFormSubmit);
@@ -42,11 +45,11 @@ export default class Point {
       return;
     }
 
-    if (this._pointListContainer.contains(prevPointComponent.getElement())) {
+    if (this._pointListContainer.getElement().contains(prevPointComponent.getElement())) {
       replace(this._pointComponent, prevPointComponent);
     }
 
-    if (this._pointListContainer.contains(prevPointEditingComponent.getElement())) {
+    if (this._pointListContainer.getElement().contains(prevPointEditingComponent.getElement())) {
       replace(this._pointEditingComponent, prevPointEditingComponent);
     }
 
