@@ -15,6 +15,7 @@ export default class Point {
     this._replacePointToForm = this._replacePointToForm.bind(this);
     this._replaceFormToPoint = this._replaceFormToPoint.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
   init(point) {
@@ -72,5 +73,17 @@ export default class Point {
 
   _handleFormSubmit() {
     this._replaceFormToPoint();
+  }
+
+  _handleFavoriteClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._point,
+        {
+          isFavorite: !this._point.isFavorite,
+        },
+      ),
+    );
   }
 }
