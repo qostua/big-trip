@@ -1,6 +1,6 @@
-import Point from './point-item.js';
 import {getFormatedDateFromDateString} from '../utils/common.js';
 import {POINT_TYPES} from '../const.js';
+import AbstractView from './abstract.js';
 
 const BLANK_FORM_EDITING = {
   type: 'flight',
@@ -169,7 +169,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], poin
   </li>`;
 };
 
-export default class PointEditing extends Point {
+export default class PointEditing extends AbstractView {
   constructor(destinationsData = {}, offersData = [], pointData = BLANK_FORM_EDITING) {
     super();
 
@@ -177,6 +177,7 @@ export default class PointEditing extends Point {
     this._pointData = pointData;
     this._offersData = offersData;
 
+    this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
@@ -195,5 +196,18 @@ export default class PointEditing extends Point {
       .getElement()
       .querySelector('.event--edit')
       .addEventListener('submit', this._formSubmitHandler);
+  }
+
+  _rollupBtnClickHandler(event) {
+    event.preventDefault();
+    this._callback.rollupBtnClick();
+  }
+
+  setRollupBtnClickHandler(callback) {
+    this._callback.rollupBtnClick = callback;
+    this
+      .getElement()
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this._rollupBtnClickHandler);
   }
 }
