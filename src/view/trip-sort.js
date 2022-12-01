@@ -32,7 +32,23 @@ const createTripSortTemplate = () => (
 );
 
 export default class TripSort extends AbstractView {
+  constructor() {
+    super();
+
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+  }
+
   getTemplate() {
     return createTripSortTemplate();
+  }
+
+  _sortTypeChangeHandler(event) {
+    event.preventDefault();
+    this._callback.sortTypeChange(event.target.dataset.sortType);
+  }
+
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('input', this._sortTypeChangeHandler);
   }
 }
