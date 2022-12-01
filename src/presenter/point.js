@@ -2,6 +2,11 @@ import PointView from '../view/point-item.js';
 import PointEditingView from '../view/point-item-editing.js';
 import {remove, render, RenderPosition, replace} from '../utils/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class Point {
   constructor(pointListContainer, destinations, offersData) {
     this._pointListContainer = pointListContainer;
@@ -10,6 +15,7 @@ export default class Point {
 
     this._pointComponent = null;
     this._pointEditingComponent = null;
+    this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._replacePointToForm = this._replacePointToForm.bind(this);
@@ -53,14 +59,23 @@ export default class Point {
     remove(this._pointEditingComponent);
   }
 
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToPoint();
+    }
+  }
+
   _replacePointToForm() {
     replace(this._pointEditingComponent, this._pointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceFormToPoint() {
     replace(this._pointComponent, this._pointEditingComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
   }
 
   _escKeyDownHandler(event) {
