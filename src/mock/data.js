@@ -80,11 +80,11 @@ export const POINT_OFFERS_DATA = [
         'title': 'Add luggage',
         'price': 30,
       }, {
+        'title': 'Add meal on board',
+        'price': 15,
+      }, {
         'title': 'Switch to comfort class',
         'price': 60,
-      }, {
-        'title': 'Add meal',
-        'price': 15,
       },
     ],
   }, {
