@@ -4,12 +4,26 @@ import {
   getFormatedDateFromDateString,
   msToHumanizeTime
 } from '../utils/common.js';
+import {TimeFormats} from '../const.js';
 
-const createOffersList = (offers) => offers.map((offer) => `<li class="event__offer">
-  <span class="event__offer-title">${offer.title}</span>
-  &plus;&euro;&nbsp;
-  <span class="event__offer-price">${offer.price}</span>
-</li>`).join('');
+const createOfferItem = (offer) => (
+  `<li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span> &plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+  </li>`
+);
+
+const createOffersList = (isOffers, offers) => {
+  if (!isOffers) {
+    return '';
+  }
+
+  return (
+    `<h4 class="visually-hidden">Offers:</h4>
+      <ul class="event__selected-offers">
+      ${offers.map((offer) => createOfferItem(offer)).join('')}
+    </ul>`
+  );
+};
 
 const createPointTemplate = (pointData) => {
   const {type, offers, destination, price, isFavorite, dateFrom, dateTo} = pointData;
@@ -20,7 +34,9 @@ const createPointTemplate = (pointData) => {
   const startTime = getFormatedDateFromDateString(dateFrom, 'HH:MM');
   const endTime = getFormatedDateFromDateString(dateTo, 'HH:MM');
   const timeDiff = msToHumanizeTime(getDatesDifferencePerMs(dateFrom, dateTo));
-  const datetimeEventData = getFormatedDateFromDateString(dateFrom, '2019-03-18');
+  const dateEventTime = getFormatedDateFromDateString(dateFrom, TimeFormats.DATE);
+
+  const isOffers = offers && offers.length !== 0;
 
   const favoriteClassName = (isFavorite) ? 'event__favorite-btn--active' : '';
 
@@ -42,10 +58,7 @@ const createPointTemplate = (pointData) => {
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>
       </p>
-      <h4 class="visually-hidden">Offers:</h4>
-      <ul class="event__selected-offers">
-        ${createOffersList(offers)}
-      </ul>
+      ${createOffersList(isOffers, offers)}
       <button class="event__favorite-btn ${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
