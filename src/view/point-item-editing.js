@@ -1,6 +1,6 @@
 import {getFormatedDateFromDateString} from '../utils/common.js';
 import {POINT_TYPES, TimeFormats} from '../const.js';
-import AbstractView from './abstract.js';
+import AbstractSmart from './abstract-smart.js';
 
 const BLANK_FORM_EDITING = {
   type: 'flight',
@@ -174,7 +174,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
   </li>`;
 };
 
-export default class PointEditing extends AbstractView {
+export default class PointEditing extends AbstractSmart {
   constructor(destinationsData = {}, offersData = [], point = BLANK_FORM_EDITING) {
     super();
 
@@ -196,34 +196,6 @@ export default class PointEditing extends AbstractView {
 
   getTemplate() {
     return createPointEditingTemplate(this._destinationsData, this._offersData, this._data);
-  }
-
-  updateData(update, isUpdateElement = true) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-      {},
-      this._data,
-      update,
-    );
-
-    if (isUpdateElement) {
-      this.updateElement();
-    }
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-
-    this.restoreHandlers();
   }
 
   _formSubmitHandler(event) {
