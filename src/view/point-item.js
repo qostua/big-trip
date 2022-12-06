@@ -30,9 +30,9 @@ const createPointTemplate = (pointData) => {
 
   const name = destination.name;
 
-  const day = getFormatedDateFromDateString(dateFrom, 'MMM D');
-  const startTime = getFormatedDateFromDateString(dateFrom, 'HH:MM');
-  const endTime = getFormatedDateFromDateString(dateTo, 'HH:MM');
+  const day = getFormatedDateFromDateString(dateFrom, TimeFormats.DAY);
+  const startTime = getFormatedDateFromDateString(dateFrom, TimeFormats.TIME);
+  const endTime = getFormatedDateFromDateString(dateTo, TimeFormats.TIME);
   const timeDiff = msToHumanizeTime(getDatesDifferencePerMs(dateFrom, dateTo));
   const dateEventTime = getFormatedDateFromDateString(dateFrom, TimeFormats.DATE);
 
@@ -42,16 +42,16 @@ const createPointTemplate = (pointData) => {
 
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${datetimeEventData}">${day}</time>
+      <time class="event__date" datetime="${dateEventTime}">${day}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${datetimeEventData}T${startTime}">${startTime}</time>
+          <time class="event__start-time" datetime="${dateEventTime}T${startTime}">${startTime}</time>
           &mdash;
-          <time class="event__end-time" datetime="${datetimeEventData}T${endTime}">${endTime}</time>
+          <time class="event__end-time" datetime="${dateEventTime}T${endTime}">${endTime}</time>
         </p>
         <p class="event__duration">${timeDiff}</p>
       </div>
