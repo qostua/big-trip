@@ -10,6 +10,16 @@ export const POINT_TYPES = [
   'restaurant',
 ];
 
+export const TimeFormats = {
+  DATA: 'YYYY-MM-DDTHH:mm:ss.msZ',
+  HUMANIZE: 'DD/MM/YY HH:mm',
+  DATE: 'YYYY-MM-DD',
+  DAY: 'MMM D',
+  TIME: 'HH:mm',
+  ONLY_MONTH: 'M',
+  ONLY_DAY: 'D',
+};
+
 const FilterMods = {
   DISABLED: false,
   ENABLE: true,
