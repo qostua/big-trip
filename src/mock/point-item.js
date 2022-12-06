@@ -8,10 +8,10 @@ import {
 } from '../const.js';
 import {
   EVENT_SITIES,
-  DESCRIPTION,
   POINT_OFFERS_DATA
 } from './data.js';
 import dayjs from 'dayjs';
+import {EVENT_SITY_DESCRIPTIONS} from './destination.js';
 
 const MAX_DAYS_GAP = 7;
 const MAX_HOURS_GAP = 4;
@@ -20,20 +20,6 @@ const generateOffers = (type) => {
   const offers = POINT_OFFERS_DATA.find((item) => item.type === type)['offers'];
 
   return getRandomSubArray(offers);
-};
-const generateDescription = () => {
-  const sentences = DESCRIPTION.split('. ');
-
-  return sentences.splice(1, getRandomInteger(1, 6));
-};
-const generatePhotos = () => {
-  const numberPhotos = getRandomInteger(1, 5);
-  const sentences = DESCRIPTION.split('. ');
-
-  return new Array(numberPhotos).fill().map(() => ({
-    'src': `http://picsum.photos/248/152?r=${Math.random()}`,
-    'description': getRandomElement(sentences),
-  }));
 };
 const generateDateFrom = () => {
   const daysGap = getRandomInteger(1, MAX_DAYS_GAP);
@@ -57,6 +43,8 @@ export const generateEventData = () => {
   const type = getRandomElement(POINT_TYPES);
   const offers = generateOffers(type);
 
+  const name = getRandomElement(EVENT_SITIES);
+
   const dateFrom = generateDateFrom();
   const dateTo = generateDateTo(dateFrom);
 
@@ -64,11 +52,7 @@ export const generateEventData = () => {
     id: String(getRandomInteger(0, 1000000)),
     type,
     offers,
-    destination: {
-      description: generateDescription(),
-      name: getRandomElement(EVENT_SITIES),
-      pictures: generatePhotos(),
-    },
+    destination: EVENT_SITY_DESCRIPTIONS.find((description) => description.name === name),
     price: getRandomInteger(1, 20) * 10,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     dateFrom,
