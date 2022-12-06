@@ -1,5 +1,6 @@
 import AbstractView from './abstract.js';
 import {getDatesDifferencePerMs, getFormatedDateFromDateString} from '../utils/common.js';
+import {TimeFormats} from '../const.js';
 
 const createCitiesTitle = (cities) => cities.join(' &mdash; ');
 const createDateRange = (dates) => {
@@ -10,12 +11,12 @@ const createDateRange = (dates) => {
   const firstDate = sortDates[0];
   const lastDate = sortDates[sortDates.length - 1];
 
-  const firstMonth = getFormatedDateFromDateString(firstDate, 'MMM');
-  const lastMonth = getFormatedDateFromDateString(lastDate, 'MMM');
+  const firstMonth = getFormatedDateFromDateString(firstDate, TimeFormats.ONLY_MONTH);
+  const lastMonth = getFormatedDateFromDateString(lastDate, TimeFormats.ONLY_MONTH);
 
   return (firstMonth === lastMonth)
-    ? `${getFormatedDateFromDateString(firstDate, 'MMM D')} - ${getFormatedDateFromDateString(lastDate, 'D')}`
-    : `${getFormatedDateFromDateString(firstDate, 'MMM D')} - ${getFormatedDateFromDateString(lastDate, 'MMM D')}`;
+    ? `${getFormatedDateFromDateString(firstDate, TimeFormats.DAY)} - ${getFormatedDateFromDateString(lastDate, TimeFormats.ONLY_DAY)}`
+    : `${getFormatedDateFromDateString(firstDate, TimeFormats.DAY)} - ${getFormatedDateFromDateString(lastDate, TimeFormats.DAY)}`;
 };
 
 const createTripInfoTemplate = (cities, dates) => {
