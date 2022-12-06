@@ -3,7 +3,7 @@ import {FilterTypes} from '../const.js';
 
 const SORTING_FILTERS = ['DAY', 'EVENT', 'TIME', 'PRICE', 'OFFERS'];
 
-const createFilterItemTemplate = (filter, isEnable, isChecked) => (
+const createFilterItem = (filter, isEnable, isChecked) => (
   `<div class="trip-sort__item  trip-sort__item--${filter}">
     <input
       id="sort-${filter}"
@@ -21,13 +21,13 @@ const createFilterItemTemplate = (filter, isEnable, isChecked) => (
   </div>`
 );
 
-const createFilterListTemplate = (filters) => filters
-  .map((filter, index) => createFilterItemTemplate(FilterTypes[filter].name, FilterTypes[filter].mod, index === 0))
+const createFilterList = (filters) => filters
+  .map((filter, index) => createFilterItem(FilterTypes[filter].name, FilterTypes[filter].mod, index === 0))
   .join('');
 
 const createTripSortTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    ${createFilterListTemplate(SORTING_FILTERS)}
+    ${createFilterList(SORTING_FILTERS)}
   </form>`
 );
 
