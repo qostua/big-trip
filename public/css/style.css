@@ -629,8 +629,10 @@ main {
   .event__type-group:not(:last-of-type) {
     border-bottom: 1px solid rgba(151, 151, 151, 0.33); }
 
-.event__type-item:not(:last-child) {
-  margin-bottom: 5px; }
+.event__type-item {
+  width: 180px; }
+  .event__type-item:not(:last-child) {
+    margin-bottom: 5px; }
 
 .event__type-label {
   position: relative;
