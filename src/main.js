@@ -7,7 +7,7 @@ import TripPresenter from './presenter/trip.js';
 
 import {generateEventData} from './mock/point-item.js';
 import {POINT_OFFERS_DATA} from './mock/data.js';
-import {generateDescriptionsData} from './mock/destination.js';
+import {EVENT_SITY_DESCRIPTIONS} from './mock/destination.js';
 import {generateTripCitiesArray, getTotalCost, getDateRange} from './mock/trip-info.js';
 
 import {render, RenderPosition} from './utils/render.js';
@@ -18,7 +18,6 @@ const points = new Array(EVENTS_COUNT).fill(null).map(() => generateEventData())
 const tripCities = generateTripCitiesArray(points);
 const tripCost = getTotalCost(points);
 const tripDates = getDateRange(points);
-const destinations = generateDescriptionsData();
 
 const pageBodyNode = document.querySelector('.page-body');
 const headerInnerNode = pageBodyNode.querySelector('.trip-main');
@@ -36,6 +35,6 @@ if (points.length !== 0) {
 render(menuWrapNode, new SiteMenuView(), RenderPosition.BEFOREEND);
 render(filtersWrapNode, new TripFiltersView(), RenderPosition.BEFOREEND);
 
-const tripPresenter = new TripPresenter(tripEventsNode, destinations, POINT_OFFERS_DATA);
+const tripPresenter = new TripPresenter(tripEventsNode, EVENT_SITY_DESCRIPTIONS, POINT_OFFERS_DATA);
 
 tripPresenter.init(points);
