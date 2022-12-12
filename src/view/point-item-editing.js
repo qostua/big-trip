@@ -194,6 +194,12 @@ export default class PointEditing extends AbstractSmart {
     this._setInnerHandlers();
   }
 
+  reset(point) {
+    this.updateData(
+      PointEditing.parsePointToData(point),
+    );
+  }
+
   getTemplate() {
     return createPointEditingTemplate(this._destinationsData, this._offersData, this._data);
   }
