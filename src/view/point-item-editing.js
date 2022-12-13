@@ -1,6 +1,9 @@
 import {getFormatedDateFromDateString} from '../utils/common.js';
 import {POINT_TYPES, TimeFormats} from '../const.js';
 import AbstractSmart from './abstract-smart.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_FORM_EDITING = {
   type: 'flight',
