@@ -11,7 +11,7 @@ export const POINT_TYPES = [
 ];
 
 export const TimeFormats = {
-  DATA: 'YYYY-MM-DDTHH:mm:ss.msZ',
+  DATA: 'YYYY-MM-DDTHH:mm:ss.ms[Z]',
   HUMANIZE: 'DD/MM/YY HH:mm',
   DATE: 'YYYY-MM-DD',
   DAY: 'MMM D',

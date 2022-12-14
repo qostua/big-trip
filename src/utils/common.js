@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {TimeFormats} from '../const.js';
 
-export const getFormatedDateFromDateString = (dateString, format = TimeFormats.DATA) => dayjs(dateString).format(format);
+export const getFormatedDateStringFromDate = (date, format = TimeFormats.DATA) => dayjs(date).format(format);
 export const getDatesDifferencePerMs = (dateStringFrom, dateStringTo) => dayjs(dateStringTo).diff(dayjs(dateStringFrom));
 export const msToHumanizeTime = (ms) => {
   const totalMinutes = Math.round(ms / 60000);
