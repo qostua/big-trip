@@ -6,7 +6,7 @@ export default class AbstractSmart extends Abstract {
     this._data = {};
   }
 
-  updateData(update, isUpdateElement = true) {
+  updateData(update, isUpdateElement = true, focusedElementSelector) {
     if (!update) {
       return;
     }
@@ -18,11 +18,11 @@ export default class AbstractSmart extends Abstract {
     );
 
     if (isUpdateElement) {
-      this.updateElement();
+      this.updateElement(focusedElementSelector);
     }
   }
 
-  updateElement() {
+  updateElement(focusedElementSelector) {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
     this.removeElement();
@@ -32,6 +32,16 @@ export default class AbstractSmart extends Abstract {
     parent.replaceChild(newElement, prevElement);
 
     this.restoreHandlers();
+
+    if (!focusedElementSelector) {
+      return;
+    }
+    const focusedElement = newElement.querySelector(focusedElementSelector);
+
+    if (!focusedElement) {
+      return;
+    }
+    focusedElement.focus();
   }
 
   restoreHandlers() {
