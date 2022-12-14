@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 import {
   getDatesDifferencePerMs,
-  getFormatedDateFromDateString,
+  getFormatedDateStringFromDate,
   msToHumanizeTime
 } from '../utils/common.js';
 import {TimeFormats} from '../const.js';
@@ -30,11 +30,11 @@ const createPointTemplate = (pointData) => {
 
   const name = destination.name;
 
-  const day = getFormatedDateFromDateString(dateFrom, TimeFormats.DAY);
-  const startTime = getFormatedDateFromDateString(dateFrom, TimeFormats.TIME);
-  const endTime = getFormatedDateFromDateString(dateTo, TimeFormats.TIME);
+  const day = getFormatedDateStringFromDate(dateFrom, TimeFormats.DAY);
+  const startTime = getFormatedDateStringFromDate(dateFrom, TimeFormats.TIME);
+  const endTime = getFormatedDateStringFromDate(dateTo, TimeFormats.TIME);
   const timeDiff = msToHumanizeTime(getDatesDifferencePerMs(dateFrom, dateTo));
-  const dateEventTime = getFormatedDateFromDateString(dateFrom, TimeFormats.DATE);
+  const dateEventTime = getFormatedDateStringFromDate(dateFrom, TimeFormats.DATE);
 
   const isOffers = offers && offers.length !== 0;
 
