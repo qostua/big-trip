@@ -1,4 +1,4 @@
-import {getFormatedDateFromDateString} from '../utils/common.js';
+import {getFormatedDateStringFromDate} from '../utils/common.js';
 import {POINT_TYPES, TimeFormats} from '../const.js';
 import AbstractSmart from './abstract-smart.js';
 import flatpickr from 'flatpickr';
@@ -114,8 +114,8 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
   const description = (destination) ? destination.description : null;
   const pictures = (destination) ? destination.pictures : null;
 
-  const dateFromHumanize = (dateFrom) ? getFormatedDateFromDateString(dateFrom, TimeFormats.HUMANIZE) : '';
-  const dateToHumanize = (dateTo) ? getFormatedDateFromDateString(dateTo, TimeFormats.HUMANIZE) : '';
+  const dateFromHumanize = (dateFrom) ? getFormatedDateStringFromDate(dateFrom, TimeFormats.HUMANIZE) : '';
+  const dateToHumanize = (dateTo) ? getFormatedDateStringFromDate(dateTo, TimeFormats.HUMANIZE) : '';
 
   const pointOffers = offersData.find((item) => item['type'] === type)['offers'];
 
@@ -123,11 +123,11 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+          <label class="event__type  event__type-btn" for="event-type-toggle">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -139,11 +139,11 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
+          <label class="event__label  event__type-output" for="event-destination">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
-          <datalist id="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${name}" list="destination-list-1">
+          <datalist id="destination-list">
             ${createDestinationList(destinationsData)}
           </datalist>
         </div>
@@ -157,11 +157,11 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
         </div>
 
         <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
+          <label class="event__label" for="event-price">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${createPointPrice(isPrice, price)}>
+          <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${createPointPrice(isPrice, price)}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
@@ -185,16 +185,21 @@ export default class PointEditing extends AbstractSmart {
     this._data = PointEditing.parsePointToData(point);
     this._offersData = offersData;
 
+    this._datapickerFrom = null;
+    this._datapickerTo = null;
+
     this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typePointChangeHandler = this._typePointChangeHandler.bind(this);
     this._cityPointInputHandler = this._cityPointInputHandler.bind(this);
-    this._dateToPointInputHandler = this._dateToPointInputHandler.bind(this);
-    this._dateFromPointInputHandler = this._dateFromPointInputHandler.bind(this);
     this._pricePointInputHandler = this._pricePointInputHandler.bind(this);
     this._offersPointInputHandler = this._offersPointInputHandler.bind(this);
+    this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
+    this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
   }
 
   reset(point) {
@@ -205,6 +210,42 @@ export default class PointEditing extends AbstractSmart {
 
   getTemplate() {
     return createPointEditingTemplate(this._destinationsData, this._offersData, this._data);
+  }
+
+  _setDatepickerFrom() {
+    if (this._datapickerFrom) {
+      this._datapickerFrom.destroy();
+      this._datapickerFrom = null;
+    }
+
+    this._datapickerFrom = flatpickr(
+      this.getElement().querySelector('#event-start-time'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateFrom,
+        onChange: this._dateFromChangeHandler,
+        maxDate: this._data.dateTo,
+      },
+    );
+  }
+
+  _setDatepickerTo() {
+    if (this._datapickerTo) {
+      this._datapickerTo.destroy();
+      this._datapickerTo = null;
+    }
+
+    this._datapickerTo = flatpickr(
+      this.getElement().querySelector('#event-end-time'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateTo,
+        onChange: this._dateToChangeHandler,
+        minDate: this._data.dateFrom,
+      },
+    );
   }
 
   _formSubmitHandler(event) {
@@ -237,6 +278,8 @@ export default class PointEditing extends AbstractSmart {
     this._setInnerHandlers();
     this.setRollupBtnClickHandler(this._callback.rollupBtnClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
   }
 
   _setInnerHandlers() {
@@ -249,16 +292,6 @@ export default class PointEditing extends AbstractSmart {
       .getElement()
       .querySelector('.event__input--destination')
       .addEventListener('input', this._cityPointInputHandler);
-
-    this
-      .getElement()
-      .querySelector('#event-start-time')
-      .addEventListener('input', this._dateFromPointInputHandler);
-
-    this
-      .getElement()
-      .querySelector('#event-end-time')
-      .addEventListener('input', this._dateToPointInputHandler);
 
     this
       .getElement()
@@ -278,7 +311,7 @@ export default class PointEditing extends AbstractSmart {
     this.updateData({
       type: event.target.value,
       offers: null,
-    });
+    }, UpdateDataMods.UPDATE_ELEMENT);
   }
 
   _cityPointInputHandler(event) {
@@ -295,25 +328,16 @@ export default class PointEditing extends AbstractSmart {
     });
   }
 
-  _dateFromPointInputHandler(event) {
-    event.preventDefault();
-    this.updateData({
-      dateFrom: getFormatedDateFromDateString(event.target.value, TimeFormats.DATA),
-    }, UpdateDataMods.SAVE_ELEMENT);
-  }
-
-  _dateToPointInputHandler(event) {
-    event.preventDefault();
-    this.updateData({
-      dateTo: getFormatedDateFromDateString(event.target.value, TimeFormats.DATA),
-    }, UpdateDataMods.SAVE_ELEMENT);
-  }
-
   _pricePointInputHandler(event) {
+    const isPricePrew = this._data.isDate;
+    const isPrice = event.target.value !== '';
+    const isUpdate = (isPrice === isPricePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
+
     event.preventDefault();
     this.updateData({
       price: event.target.value,
-    }, UpdateDataMods.SAVE_ELEMENT);
+      isPrice,
+    }, isUpdate, `#${event.target.id}`);
   }
 
   _offersPointInputHandler(event) {
@@ -336,6 +360,27 @@ export default class PointEditing extends AbstractSmart {
     this.updateData({
       offers,
     }, UpdateDataMods.SAVE_ELEMENT);
+  }
+
+  _dateFromChangeHandler([userDate]) {
+    const isDatePrew = this._data.isDate;
+    const isDate = Boolean(userDate);
+    const isUpdate = (isDate === isDatePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
+
+    this.updateData({
+      dateFrom: userDate ? userDate.toISOString() : null,
+      isDate,
+    }, isUpdate, '#event-start-time');
+  }
+
+  _dateToChangeHandler([userDate]) {
+    const isDatePrew = this._data.isDate;
+    const isDate = Boolean(userDate);
+    const isUpdate = (isDate === isDatePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
+
+    this.updateData({
+      dateTo: getFormatedDateStringFromDate(userDate, TimeFormats.DATA),
+    }, isUpdate, '#event-end-time');
   }
 
   static parsePointToData(point) {
