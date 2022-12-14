@@ -4,7 +4,7 @@ import {
   getRandomSubArray
 } from './utils.js';
 import {
-  POINT_TYPES
+  POINT_TYPES, TimeFormats
 } from '../const.js';
 import {
   EVENT_SITIES,
@@ -28,7 +28,7 @@ const generateDateFrom = () => {
     .hour(getRandomInteger(0, 12))
     .minute(getRandomInteger(0, 5) * 10)
     .add(daysGap, 'days')
-    .format('YYYY-MM-DDTHH:mm:ss.msZ');
+    .format(TimeFormats.DATA);
 };
 const generateDateTo = (dateFrom) => {
   const hoursGap = getRandomInteger(1, MAX_HOURS_GAP);
@@ -36,7 +36,7 @@ const generateDateTo = (dateFrom) => {
   return dayjs(dateFrom)
     .minute(getRandomInteger(0, 5) * 10)
     .add(hoursGap, 'hour')
-    .format('YYYY-MM-DDTHH:mm:ss.msZ');
+    .format(TimeFormats.DATA);
 };
 
 export const generateEventData = () => {
