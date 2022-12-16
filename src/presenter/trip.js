@@ -36,16 +36,6 @@ export default class Trip {
     this._renderTrip();
   }
 
-  _handleSortTypeChange(sortType) {
-    if (this._currentSortType === sortType) {
-      return;
-    }
-
-    this._sortPoints(sortType);
-    this._clearPoints();
-    this._renderPoints();
-  }
-
   _sortPoints(sortType) {
     switch (sortType) {
       case FilterTypes.DAY.name:
@@ -60,6 +50,16 @@ export default class Trip {
     }
 
     this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortPoints(sortType);
+    this._clearPoints();
+    this._renderPoints();
   }
 
   _handleModeChange() {
