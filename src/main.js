@@ -5,6 +5,10 @@ import TripFiltersView from './view/filters.js';
 
 import TripPresenter from './presenter/trip.js';
 
+import PointsModel from './model/points.js';
+import OffersModel from './model/offers.js';
+import DescriptionsModel from './model/descriptions.js';
+
 import {generateEventData} from './mock/point-item.js';
 import {POINT_OFFERS_DATA} from './mock/data.js';
 import {EVENT_SITY_DESCRIPTIONS} from './mock/destination.js';
@@ -12,12 +16,19 @@ import {generateTripCitiesArray, getTotalCost, getDateRange} from './mock/trip-i
 
 import {render, RenderPosition} from './utils/render.js';
 
-const EVENTS_COUNT = 20;
+const EVENTS_COUNT = 0;
 
 const points = new Array(EVENTS_COUNT).fill(null).map(() => generateEventData());
 const tripCities = generateTripCitiesArray(points);
 const tripCost = getTotalCost(points);
 const tripDates = getDateRange(points);
+
+const pointsModel = new PointsModel();
+pointsModel.points = points;
+const offersModel = new OffersModel();
+offersModel.offers = POINT_OFFERS_DATA;
+const descriptionsModel = new DescriptionsModel();
+descriptionsModel.descriptions = EVENT_SITY_DESCRIPTIONS;
 
 const pageBodyNode = document.querySelector('.page-body');
 const headerInnerNode = pageBodyNode.querySelector('.trip-main');
@@ -35,6 +46,6 @@ if (points.length !== 0) {
 render(menuWrapNode, new SiteMenuView(), RenderPosition.BEFOREEND);
 render(filtersWrapNode, new TripFiltersView(), RenderPosition.BEFOREEND);
 
-const tripPresenter = new TripPresenter(tripEventsNode, EVENT_SITY_DESCRIPTIONS, POINT_OFFERS_DATA);
+const tripPresenter = new TripPresenter(tripEventsNode, pointsModel, offersModel, descriptionsModel);
 
-tripPresenter.init(points);
+tripPresenter.init();
