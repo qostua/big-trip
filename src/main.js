@@ -16,7 +16,7 @@ import {generateTripCitiesArray, getTotalCost, getDateRange} from './mock/trip-i
 
 import {render, RenderPosition} from './utils/render.js';
 
-const EVENTS_COUNT = 0;
+const EVENTS_COUNT = 20;
 
 const points = new Array(EVENTS_COUNT).fill(null).map(() => generateEventData());
 const tripCities = generateTripCitiesArray(points);

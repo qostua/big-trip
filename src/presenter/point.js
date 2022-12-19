@@ -8,10 +8,10 @@ const Mode = {
 };
 
 export default class Point {
-  constructor(pointListContainer, destinations, offersData, changeData, changeMode) {
+  constructor(pointListContainer, offers, destinations, changeData, changeMode) {
     this._pointListContainer = pointListContainer;
     this._destinations = destinations;
-    this._offersData = offersData;
+    this._offersData = offers;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
