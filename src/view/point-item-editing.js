@@ -161,7 +161,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${createPointPrice(isPrice, price)}>
+          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[^0]/d+" name="event-price" value=${createPointPrice(isPrice, price)}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
@@ -365,7 +365,9 @@ export default class PointEditing extends AbstractSmart {
   }
 
   _pricePointInputHandler(event) {
-    const isPricePrew = this._data.isDate;
+    event.target.value = event.target.value.replace(/(\D|^0)/g, '');
+
+    const isPricePrew = this._data.isPrice;
     const isPrice = event.target.value !== '';
     const isUpdate = (isPrice === isPricePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
 
