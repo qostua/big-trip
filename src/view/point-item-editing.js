@@ -328,6 +328,8 @@ export default class PointEditing extends AbstractSmart {
       dateFrom: userDate ? userDate.toISOString() : null,
       isDate,
     }, isUpdate, '#event-start-time');
+
+    this._datapickerTo.set('minDate', this._data.dateFrom);
   }
 
   _dateToChangeHandler([userDate]) {
@@ -339,6 +341,8 @@ export default class PointEditing extends AbstractSmart {
       dateTo: getFormatedDateStringFromDate(userDate, TimeFormats.DATA),
       isDate,
     }, isUpdate, '#event-end-time');
+
+    this._datapickerFrom.set('maxDate', this._data.dateTo);
   }
 
   _pricePointInputHandler(event) {
