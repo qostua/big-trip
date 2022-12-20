@@ -1,10 +1,5 @@
 import AbstractView from './abstract.js';
-
-const FILTERS = [
-  'everthing',
-  'past',
-  'future',
-];
+import {FiltersType} from '../const.js';
 
 const createFilterItem = (filter, isChecked) => (
   `<div class="trip-filters__filter">
@@ -19,7 +14,7 @@ const createFilterList = (filters) => filters
 
 const createTripFiltersTemplate = () => (
   `<form class="trip-filters" action="#" method="get">
-    ${createFilterList(FILTERS)}
+    ${createFilterList(Object.values(FiltersType))}
 
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`
