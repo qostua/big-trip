@@ -197,6 +197,7 @@ export default class PointEditing extends AbstractSmart {
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
     this._offersPointInputHandler = this._offersPointInputHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepickerFrom();
@@ -205,6 +206,15 @@ export default class PointEditing extends AbstractSmart {
 
   getTemplate() {
     return createPointEditingTemplate(this._destinationsData, this._offersData, this._data);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
   }
 
   reset(point) {
@@ -229,10 +239,19 @@ export default class PointEditing extends AbstractSmart {
       .addEventListener('click', this._rollupBtnClickHandler);
   }
 
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this
+      .getElement()
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this._deleteClickHandler);
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this.setRollupBtnClickHandler(this._callback.rollupBtnClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
     this._setDatepickerFrom();
     this._setDatepickerTo();
   }
@@ -365,6 +384,11 @@ export default class PointEditing extends AbstractSmart {
   _rollupBtnClickHandler(event) {
     event.preventDefault();
     this._callback.rollupBtnClick();
+  }
+
+  _deleteClickHandler(event) {
+    event.preventDefault();
+    this._callback.deleteClick(PointEditing.parseDataToPoint(this._data));
   }
 
   _offersPointInputHandler(event) {
