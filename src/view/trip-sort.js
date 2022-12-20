@@ -21,25 +21,27 @@ const createFilterItem = (filter, isEnable, isChecked) => (
   </div>`
 );
 
-const createFilterList = (filters) => filters
-  .map((filter, index) => createFilterItem(FilterTypes[filter].name, FilterTypes[filter].mod, index === 0))
+const createFilterList = (filters, currentSortType) => filters
+  .map((filter) => createFilterItem(FilterTypes[filter].name, FilterTypes[filter].mod, FilterTypes[filter].name === currentSortType))
   .join('');
 
-const createTripSortTemplate = () => (
+const createTripSortTemplate = (currentSortType) => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    ${createFilterList(SORTING_FILTERS)}
+    ${createFilterList(SORTING_FILTERS, currentSortType)}
   </form>`
 );
 
 export default class TripSort extends AbstractView {
-  constructor() {
+  constructor(currentSortType) {
     super();
+
+    this._currentSortType = currentSortType;
 
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripSortTemplate();
+    return createTripSortTemplate(this._currentSortType);
   }
 
   _sortTypeChangeHandler(event) {
