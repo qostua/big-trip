@@ -1,6 +1,7 @@
 import PointView from '../view/point-item.js';
 import PointEditingView from '../view/point-item-editing.js';
 import {remove, render, RenderPosition, replace} from '../utils/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -24,6 +25,7 @@ export default class Point {
     this._replaceFormToPoint = this._replaceFormToPoint.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
   init(point) {
@@ -39,6 +41,7 @@ export default class Point {
     this._pointComponent.setRollupBtnClickHandler(this._replacePointToForm);
     this._pointEditingComponent.setRollupBtnClickHandler(this._replaceFormToPoint);
     this._pointEditingComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._pointEditingComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevPointComponent === null || prevPointEditingComponent === null) {
       render(this._pointListContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -91,12 +94,19 @@ export default class Point {
   }
 
   _handleFormSubmit(point) {
-    this._changeData(point);
+    const isMinorUpdate = (point.dateFrom !== this._point.dateFrom) || (point.dateTo !== this._point.dateTo) || (point.price !== this._point.price);
+    this._changeData(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      point,
+    );
     this._replaceFormToPoint();
   }
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._point,
@@ -104,6 +114,14 @@ export default class Point {
           isFavorite: !this._point.isFavorite,
         },
       ),
+    );
+  }
+
+  _handleDeleteClick(point) {
+    this._changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
     );
   }
 }
