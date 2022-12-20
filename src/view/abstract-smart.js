@@ -41,6 +41,10 @@ export default class AbstractSmart extends Abstract {
     if (!focusedElement) {
       return;
     }
+    if (focusedElement.tagName === 'INPUT') {
+      const end = focusedElement.value.length;
+      focusedElement.setSelectionRange(end, end);
+    }
     focusedElement.focus();
   }
 
