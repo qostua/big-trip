@@ -19,6 +19,11 @@ const UpdateDataMods = {
   SAVE_ELEMENT: false,
 };
 
+const PointEditingMod = {
+  NEW_POINT: 'NEW_POINT',
+  EXIST_POINT: 'EXIST_POINT',
+};
+
 const createPointTypesList = (currentType) => (
   POINT_TYPES.map((pointType) => `<div class="event__type-item">
     <input
@@ -106,9 +111,9 @@ const createRollupBtn = (isNewPoint = true) => {
 };
 
 const createPointEditingTemplate = (destinationsData = [], offersData = [], data = {}) => {
-  const {id, type, offers, destination, price, dateFrom, dateTo, isNewPoint, isDestination, isPrice, isDate} = data;
+  const {id, type, offers, destination, price, dateFrom, dateTo, isNewPoint, isDestination, isPrice, isDateFrom, isDateTo} = data;
 
-  const isSubmitDisabled = !(isPrice && isDate);
+  const isSubmitDisabled = !(isDestination && isPrice && isDateFrom && isDateTo);
 
   const name = (destination) ? destination.name : '';
   const description = (destination) ? destination.description : null;
@@ -142,7 +147,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
           <label class="event__label  event__type-output" for="event-destination">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${name}" list="destination-list">
           <datalist id="destination-list">
             ${createDestinationList(destinationsData)}
           </datalist>
@@ -161,7 +166,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[^0]/d+" name="event-price" value=${createPointPrice(isPrice, price)}>
+          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[^0]\\d+" name="event-price" value=${createPointPrice(isPrice, price)}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
@@ -185,9 +190,10 @@ export default class PointEditing extends AbstractSmart {
     this._destinationsData = destinationsData;
     this._offersData = offersData;
 
+    this._pointEditingMod = this._data.isNewPoint ? PointEditingMod.NEW_POINT : PointEditingMod.EXIST_POINT;
+
     this._datapickerFrom = null;
     this._datapickerTo = null;
-
 
     this._typePointChangeHandler = this._typePointChangeHandler.bind(this);
     this._cityPointInputHandler = this._cityPointInputHandler.bind(this);
@@ -232,6 +238,10 @@ export default class PointEditing extends AbstractSmart {
   }
 
   setRollupBtnClickHandler(callback) {
+    if (this._pointEditingMod === PointEditingMod.NEW_POINT) {
+      return;
+    }
+
     this._callback.rollupBtnClick = callback;
     this
       .getElement()
@@ -327,38 +337,41 @@ export default class PointEditing extends AbstractSmart {
   _cityPointInputHandler(event) {
     event.preventDefault();
 
-    const destination = this._destinationsData.find((item) => item.name === event.target.value);
+    let destination = this._destinationsData.find((item) => item.name === event.target.value);
 
-    if (!destination) {
-      return;
-    }
+    const isDestination = Boolean(destination);
+
+    const isUpdate = (isDestination !== this._data.isDestination) ? UpdateDataMods.UPDATE_ELEMENT : UpdateDataMods.SAVE_ELEMENT;
+
+    destination = isDestination ? destination : {
+      name: event.target.value,
+      pictures: null,
+      description: null,
+    };
 
     this.updateData({
       destination,
-    });
+      isDestination,
+    }, isUpdate, `#${event.target.id}`);
   }
 
   _dateFromChangeHandler([userDate]) {
-    const isDatePrew = this._data.isDate;
-    const isDate = Boolean(userDate);
-    const isUpdate = (isDate === isDatePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
+    const isUpdate = (Boolean(userDate) !== this._data.isDateFrom && this._data.isDateTo) ? UpdateDataMods.UPDATE_ELEMENT : UpdateDataMods.SAVE_ELEMENT;
 
     this.updateData({
       dateFrom: userDate ? userDate.toISOString() : null,
-      isDate,
+      isDateFrom: Boolean(userDate),
     }, isUpdate, '#event-start-time');
 
     this._datapickerTo.set('minDate', this._data.dateFrom);
   }
 
   _dateToChangeHandler([userDate]) {
-    const isDatePrew = this._data.isDate;
-    const isDate = Boolean(userDate);
-    const isUpdate = (isDate === isDatePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
+    const isUpdate = (Boolean(userDate) !== this._data.isDateTo && this._data.isDateFrom) ? UpdateDataMods.UPDATE_ELEMENT : UpdateDataMods.SAVE_ELEMENT;
 
     this.updateData({
-      dateTo: getFormatedDateStringFromDate(userDate, TimeFormats.DATA),
-      isDate,
+      dateTo: userDate ? userDate.toISOString() : null,
+      isDateTo: Boolean(userDate),
     }, isUpdate, '#event-end-time');
 
     this._datapickerFrom.set('maxDate', this._data.dateTo);
@@ -420,10 +433,11 @@ export default class PointEditing extends AbstractSmart {
       {},
       point,
       {
-        isNewPoint: !point.dateFrom,
+        isNewPoint: !point.id,
         isDestination: Boolean(point.destination),
         isPrice: Boolean(point.price),
-        isDate: Boolean(point.dateFrom) && Boolean(point.dateTo),
+        isDateFrom: Boolean(point.dateFrom),
+        isDateTo: Boolean(point.dateTo),
       },
     );
   }
