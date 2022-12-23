@@ -13,3 +13,4 @@ export const msToHumanizeTime = (ms) => {
 
   return [hoursString, minutesString].join(' ');
 };
+export const getTodayDateString = () => getFormatedDateStringFromDate(dayjs());
