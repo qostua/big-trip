@@ -26,6 +26,11 @@ export const TimeFormats = {
   ONLY_DAY: 'D',
 };
 
+export const MenuItem = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+};
+
 const FilterMod = {
   DISABLED: false,
   ENABLE: true,

@@ -1,9 +1,5 @@
 import AbstractView from './abstract.js';
-
-const MENU_ITEMS = [
-  'table',
-  'stats',
-];
+import {MenuItem} from '../const.js';
 
 const createMenuItemTemplate = (item, isActive) => (
   `<a class="trip-tabs__btn  ${isActive ? 'trip-tabs__btn--active' : ''}" href="#">
@@ -17,7 +13,7 @@ const createItemListTemplate = (items) => items
 
 const createSiteMenuTemplate = () => (
   `<nav class="trip-controls__trip-tabs  trip-tabs">
-    ${createItemListTemplate(MENU_ITEMS)}
+    ${createItemListTemplate(Object.values(MenuItem))}
   </nav>`
 );
 
