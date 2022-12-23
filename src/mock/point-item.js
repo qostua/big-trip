@@ -13,7 +13,7 @@ import {
 import dayjs from 'dayjs';
 import {EVENT_SITY_DESCRIPTIONS} from './destination.js';
 
-const MAX_DAYS_GAP = 7;
+const MAX_DAYS_GAP = 3;
 const MAX_HOURS_GAP = 4;
 
 const generateOffers = (type) => {
@@ -22,7 +22,7 @@ const generateOffers = (type) => {
   return getRandomSubArray(offers);
 };
 const generateDateFrom = () => {
-  const daysGap = getRandomInteger(1, MAX_DAYS_GAP);
+  const daysGap = getRandomInteger(-MAX_DAYS_GAP, MAX_DAYS_GAP);
 
   return dayjs()
     .hour(getRandomInteger(0, 12))
