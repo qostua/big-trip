@@ -10,6 +10,12 @@ export const POINT_TYPES = [
   'restaurant',
 ];
 
+export const FilterType = {
+  EVERYTHING: 'everything',
+  PAST: 'past',
+  FUTURE: 'future',
+};
+
 export const TimeFormats = {
   DATA: 'YYYY-MM-DDTHH:mm:ss.ms[Z]',
   HUMANIZE: 'DD/MM/YY HH:mm',
@@ -20,31 +26,31 @@ export const TimeFormats = {
   ONLY_DAY: 'D',
 };
 
-const FilterMods = {
+const FilterMod = {
   DISABLED: false,
   ENABLE: true,
 };
 
-export const FilterTypes = {
+export const SortType = {
   DAY: {
     name: 'day',
-    mod: FilterMods.ENABLE,
+    mod: FilterMod.ENABLE,
   },
   EVENT: {
     name: 'event',
-    mod: FilterMods.DISABLED,
+    mod: FilterMod.DISABLED,
   },
   TIME: {
     name: 'time',
-    mod: FilterMods.ENABLE,
+    mod: FilterMod.ENABLE,
   },
   PRICE: {
     name: 'price',
-    mod: FilterMods.ENABLE,
+    mod: FilterMod.ENABLE,
   },
   OFFERS: {
     name: 'offers',
-    mod: FilterMods.DISABLED,
+    mod: FilterMod.DISABLED,
   },
 };
 
