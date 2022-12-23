@@ -2,26 +2,30 @@ import TripSortView from '../view/trip-sort.js';
 import PointsListView from '../view/points-list.js';
 import EmptyListPlugView from '../view/empty-list-plug.js';
 import PointPresenter from './point.js';
+import NewPointPresenter from './new-point.js';
 
 import {render, remove, RenderPosition} from '../utils/render.js';
 import {compareDatePoints, compareTimePoints, comparePricePoints} from '../utils/point.js';
 
-import {FilterTypes, UpdateType, UserAction} from '../const.js';
+import {SortType, FilterType, UpdateType, UserAction} from '../const.js';
+import {filter} from '../utils/filter.js';
 
 export default class Trip {
-  constructor(pointsContainer, pointsModel, offersModel, descriptionsModel) {
+  constructor(pointsContainer, pointsModel, offersModel, descriptionsModel, filtersModel) {
     this._pointsModel = pointsModel;
     this._offersModel = offersModel;
     this._descriptionsModel = descriptionsModel;
+    this._filtersModel = filtersModel;
 
     this._pointsContainer = pointsContainer;
-    this._currentSortType = FilterTypes.DAY.name;
+    this._currentSortType = SortType.DAY.name;
+    this._currentFilterType = FilterType.EVERYTHING;
 
     this._pointPresenters = new Map();
 
     this._tripSortComponent = new TripSortView();
     this._pointsListComponent = new PointsListView();
-    this._emptyListPlugComponent = new EmptyListPlugView();
+    this._emptyListPlugComponent = null;
 
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -29,6 +33,9 @@ export default class Trip {
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
+    this._filtersModel.addObserver(this._handleModelEvent);
+
+    this._newPointPresenter = new NewPointPresenter(this._pointsListComponent, this._getOffers(), this._getDescriptions(), this._handleViewAction);
   }
 
   init() {
@@ -37,17 +44,27 @@ export default class Trip {
     this._renderTrip();
   }
 
+  createPoint() {
+    this._currentSortType = SortType.DAY.name;
+    this._filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newPointPresenter.init();
+  }
+
   _getPoints() {
+    this._currentFilterType = this._filtersModel.getFilter();
+    const points = this._pointsModel.points;
+    const filtredPoints = filter[this._currentFilterType](points);
+
     switch (this._currentSortType) {
-      case FilterTypes.DAY.name:
-        return this._pointsModel.points.slice().sort(compareDatePoints);
-      case FilterTypes.TIME.name:
-        return this._pointsModel.points.slice().sort(compareTimePoints);
-      case FilterTypes.PRICE.name:
-        return this._pointsModel.points.slice().sort(comparePricePoints);
+      case SortType.DAY.name:
+        return filtredPoints.sort(compareDatePoints);
+      case SortType.TIME.name:
+        return filtredPoints.sort(compareTimePoints);
+      case SortType.PRICE.name:
+        return filtredPoints.sort(comparePricePoints);
     }
 
-    return this._pointsModel.points;
+    return filtredPoints;
   }
 
   _getOffers() {
@@ -70,6 +87,7 @@ export default class Trip {
 
   _handleModeChange() {
     this._pointPresenters.forEach((presenter) => presenter.resetView());
+    this._newPointPresenter.destroy();
   }
 
   _renderTripSort() {
@@ -91,18 +109,23 @@ export default class Trip {
   }
 
   _renderEmptyListPlug() {
+    this._emptyListPlugComponent = new EmptyListPlugView(this._currentFilterType);
     render(this._pointsContainer, this._emptyListPlugComponent, RenderPosition.BEFOREEND);
   }
 
   _clearTrip({resetSortType = false} = {}) {
     this._pointPresenters.forEach((presenter) => presenter.destroy());
     this._pointPresenters.clear();
+    this._newPointPresenter.destroy();
 
-    remove(this._emptyListPlugComponent);
+    if (this._emptyListPlugComponent) {
+      remove(this._emptyListPlugComponent);
+    }
+
     remove(this._tripSortComponent);
 
     if (resetSortType) {
-      this._currentSortType = FilterTypes.DAY.name;
+      this._currentSortType = SortType.DAY.name;
     }
   }
 

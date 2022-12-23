@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import {FilterTypes} from '../const.js';
+import {SortType} from '../const.js';
 
 const SORTING_FILTERS = ['DAY', 'EVENT', 'TIME', 'PRICE', 'OFFERS'];
 
@@ -22,7 +22,7 @@ const createFilterItem = (filter, isEnable, isChecked) => (
 );
 
 const createFilterList = (filters, currentSortType) => filters
-  .map((filter) => createFilterItem(FilterTypes[filter].name, FilterTypes[filter].mod, FilterTypes[filter].name === currentSortType))
+  .map((filter) => createFilterItem(SortType[filter].name, SortType[filter].mod, SortType[filter].name === currentSortType))
   .join('');
 
 const createTripSortTemplate = (currentSortType) => (
