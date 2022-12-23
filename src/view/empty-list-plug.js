@@ -11,7 +11,13 @@ const createEmptyListPlugTemplate = (activeFilter = 'everthing') => (
 );
 
 export default class EmptyListPlug extends AbstractView {
+  constructor(activeFilter) {
+    super();
+
+    this._activeFilter = activeFilter;
+  }
+
   getTemplate() {
-    return createEmptyListPlugTemplate();
+    return createEmptyListPlugTemplate(this._activeFilter);
   }
 }
