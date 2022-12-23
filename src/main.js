@@ -1,13 +1,14 @@
 import TripInfoView from './view/trip-info.js';
 import TripCostView from './view/trip-cost.js';
 import SiteMenuView from './view/menu.js';
-import TripFiltersView from './view/filters.js';
 
 import TripPresenter from './presenter/trip.js';
+import FilterPresenter from './presenter/filter.js';
 
 import PointsModel from './model/points.js';
 import OffersModel from './model/offers.js';
 import DescriptionsModel from './model/descriptions.js';
+import FiltersModel from './model/filters.js';
 
 import {generateEventData} from './mock/point-item.js';
 import {POINT_OFFERS_DATA} from './mock/data.js';
@@ -29,6 +30,7 @@ const offersModel = new OffersModel();
 offersModel.offers = POINT_OFFERS_DATA;
 const descriptionsModel = new DescriptionsModel();
 descriptionsModel.descriptions = EVENT_SITY_DESCRIPTIONS;
+const filtersModel = new FiltersModel();
 
 const pageBodyNode = document.querySelector('.page-body');
 const headerInnerNode = pageBodyNode.querySelector('.trip-main');
@@ -44,8 +46,14 @@ if (points.length !== 0) {
 }
 
 render(menuWrapNode, new SiteMenuView(), RenderPosition.BEFOREEND);
-render(filtersWrapNode, new TripFiltersView(), RenderPosition.BEFOREEND);
 
-const tripPresenter = new TripPresenter(tripEventsNode, pointsModel, offersModel, descriptionsModel);
+const tripPresenter = new TripPresenter(tripEventsNode, pointsModel, offersModel, descriptionsModel, filtersModel);
+const filterPresenter = new FilterPresenter(filtersWrapNode, filtersModel);
+
+document.querySelector('.trip-main__event-add-btn  ').addEventListener('click', (event) => {
+  event.preventDefault();
+  tripPresenter.createPoint();
+});
 
 tripPresenter.init();
+filterPresenter.init();
