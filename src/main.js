@@ -16,6 +16,7 @@ import {EVENT_SITY_DESCRIPTIONS} from './mock/destination.js';
 import {generateTripCitiesArray, getTotalCost, getDateRange} from './mock/trip-info.js';
 
 import {render, RenderPosition} from './utils/render.js';
+import {MenuItem} from './const.js';
 
 const EVENTS_COUNT = 20;
 
@@ -39,20 +40,55 @@ const filtersWrapNode = headerInnerNode.querySelector('.trip-controls__filters')
 const pageMainNode = pageBodyNode.querySelector('.page-main');
 const tripEventsNode = pageMainNode.querySelector('.trip-events');
 
+const newPointNode = document.querySelector('.trip-main__event-add-btn');
+
 if (points.length !== 0) {
   const tripInfoComponent = new TripInfoView(tripCities, tripDates);
   render(headerInnerNode, tripInfoComponent, RenderPosition.AFTERBEGIN);
   render(tripInfoComponent, new TripCostView(tripCost), RenderPosition.BEFOREEND);
 }
 
-render(menuWrapNode, new SiteMenuView(), RenderPosition.BEFOREEND);
-
 const tripPresenter = new TripPresenter(tripEventsNode, pointsModel, offersModel, descriptionsModel, filtersModel);
 const filterPresenter = new FilterPresenter(filtersWrapNode, filtersModel);
 
-document.querySelector('.trip-main__event-add-btn  ').addEventListener('click', (event) => {
+const siteMenuComponent = new SiteMenuView(menuWrapNode);
+siteMenuComponent.init();
+
+const handleCloseNewPoint = () => {
+  newPointNode.disabled = false;
+};
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TRIP:
+      //убрать статистику
+      tripPresenter.init();
+      siteMenuComponent.setMenuItem(MenuItem.TRIP);
+      break;
+    case MenuItem.STATS:
+      tripPresenter.destroy();
+      siteMenuComponent.setMenuItem(MenuItem.STATS);
+      //открыть статистику
+      break;
+  }
+};
+
+const handleAddNewPoint = () => {
+  //убрать статистику
+  //открыть поездку
+  //показать форму
+  //заблокировать кнопку
+  //разблокировать после сохранения
+};
+
+siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+
+
+
+newPointNode.addEventListener('click', (event) => {
   event.preventDefault();
-  tripPresenter.createPoint();
+  newPointNode.disabled = true;
+  tripPresenter.createPoint(handleCloseNewPoint);
 });
 
 tripPresenter.init();
