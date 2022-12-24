@@ -170,7 +170,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__reset-btn" type="reset">${isNewPoint ? 'Cancel' : 'Delete'}</button>
         ${createRollupBtn(isNewPoint)}
       </header>
       <section class="event__details">
