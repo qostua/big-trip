@@ -27,8 +27,8 @@ export const TimeFormats = {
 };
 
 export const MenuItem = {
-  TABLE: 'Table',
-  STATS: 'Stats',
+  TRIP: 'table',
+  STATS: 'stats',
 };
 
 const FilterMod = {
