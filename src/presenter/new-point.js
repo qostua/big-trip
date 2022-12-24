@@ -9,6 +9,7 @@ export default class NewPoint {
     this._offersData = offers;
     this._changeData = changeData;
 
+    this._destroyCallback = null;
     this._pointEditingComponent = null;
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -16,7 +17,9 @@ export default class NewPoint {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._destroyCallback = callback;
+
     if (this._pointEditingComponent !== null) {
       return;
     }
@@ -34,6 +37,10 @@ export default class NewPoint {
   destroy() {
     if (this._pointEditingComponent === null) {
       return;
+    }
+
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
     }
 
     remove(this._pointEditingComponent);
