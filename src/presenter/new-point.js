@@ -31,6 +31,8 @@ export default class NewPoint {
 
     render(this._pointsContainer, this._pointEditingComponent, RenderPosition.AFTERBEGIN);
 
+    this._pointEditingComponent.getElement().querySelector('#event-destination').focus();
+
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
