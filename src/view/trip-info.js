@@ -2,7 +2,14 @@ import AbstractView from './abstract.js';
 import {getDatesDifferencePerMs, getFormatedDateStringFromDate} from '../utils/common.js';
 import {TimeFormats} from '../const.js';
 
-const createCitiesTitle = (cities) => cities.join(' &mdash; ');
+const createCitiesTitle = (cities) => {
+  if (cities.length > 3) {
+    return `${cities[0]} — ... — ${cities[cities.length - 1]}`;
+  }
+
+  return cities.join(' &mdash; ');
+};
+
 const createDateRange = (dates) => {
   const sortDates = dates
     .slice()
