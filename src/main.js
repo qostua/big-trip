@@ -1,10 +1,9 @@
-import TripInfoView from './view/trip-info.js';
-import TripCostView from './view/trip-cost.js';
 import SiteMenuView from './view/menu.js';
 import StatisticsView from './view/statistics.js';
 
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
+import SummaryPresenter from './presenter/summary.js';
 
 import PointsModel from './model/points.js';
 import OffersModel from './model/offers.js';
@@ -14,17 +13,14 @@ import FiltersModel from './model/filters.js';
 import {generateEventData} from './mock/point-item.js';
 import {POINT_OFFERS_DATA} from './mock/data.js';
 import {EVENT_SITY_DESCRIPTIONS} from './mock/destination.js';
-import {generateTripCitiesArray, getTotalCost, getDateRange} from './mock/trip-info.js';
 
-import {render, RenderPosition} from './utils/render.js';
+
+import {remove, render, RenderPosition} from './utils/render.js';
 import {MenuItem} from './const.js';
 
 const EVENTS_COUNT = 20;
 
 const points = new Array(EVENTS_COUNT).fill(null).map(() => generateEventData());
-const tripCities = generateTripCitiesArray(points);
-const tripCost = getTotalCost(points);
-const tripDates = getDateRange(points);
 
 const pointsModel = new PointsModel();
 pointsModel.points = points;
@@ -39,15 +35,14 @@ const headerInnerNode = pageBodyNode.querySelector('.trip-main');
 const menuWrapNode = headerInnerNode.querySelector('.trip-controls__navigation');
 const filtersWrapNode = headerInnerNode.querySelector('.trip-controls__filters');
 const pageMainNode = pageBodyNode.querySelector('.page-main');
-const tripEventsNode = pageMainNode.querySelector('.trip-events');
+const pageMainContainerNode = pageMainNode.querySelector('.page-main__container');
+const tripEventsNode = pageMainContainerNode.querySelector('.trip-events');
+
 
 const newPointNode = document.querySelector('.trip-main__event-add-btn');
 
-if (points.length !== 0) {
-  const tripInfoComponent = new TripInfoView(tripCities, tripDates);
-  render(headerInnerNode, tripInfoComponent, RenderPosition.AFTERBEGIN);
-  render(tripInfoComponent, new TripCostView(tripCost), RenderPosition.BEFOREEND);
-}
+const summaryPresenter = new SummaryPresenter(headerInnerNode, pointsModel);
+summaryPresenter.init();
 
 const tripPresenter = new TripPresenter(tripEventsNode, pointsModel, offersModel, descriptionsModel, filtersModel);
 const filterPresenter = new FilterPresenter(filtersWrapNode, filtersModel);
