@@ -166,7 +166,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[^0]\\d+" name="event-price" value=${createPointPrice(isPrice, price)}>
+          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[1-9]\\d*" name="event-price" value=${createPointPrice(isPrice, price)}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
