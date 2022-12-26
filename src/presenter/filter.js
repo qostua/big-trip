@@ -34,6 +34,26 @@ export default class Filter {
     remove(prevFilterComponent);
   }
 
+  disableFilters() {
+    if (this._filterComponent === null) {
+      return;
+    }
+
+    const inputs = this._filterComponent.getElement().querySelectorAll('input');
+
+    inputs.forEach((input) => input.disabled = true);
+  }
+
+  enableFilters() {
+    if (this._filterComponent === null) {
+      return;
+    }
+
+    const inputs = this._filterComponent.getElement().querySelectorAll('input');
+
+    inputs.forEach((input) => input.disabled = false);
+  }
+
   _handleModelEvent() {
     this.init();
   }
