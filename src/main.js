@@ -1,6 +1,7 @@
 import TripInfoView from './view/trip-info.js';
 import TripCostView from './view/trip-cost.js';
 import SiteMenuView from './view/menu.js';
+import StatisticsView from './view/statistics.js';
 
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
@@ -58,35 +59,43 @@ const handleCloseNewPoint = () => {
   newPointNode.disabled = false;
 };
 
+let StatisticsComponent = null;
+
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TRIP:
-      //убрать статистику
+      remove(StatisticsComponent);
+
       tripPresenter.init();
+
       siteMenuComponent.setMenuItem(MenuItem.TRIP);
+      filterPresenter.enableFilters();
+
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
+
       siteMenuComponent.setMenuItem(MenuItem.STATS);
-      //открыть статистику
+      filterPresenter.disableFilters();
+
+      StatisticsComponent = new StatisticsView(pointsModel.points);
+      render(pageMainContainerNode, StatisticsComponent, RenderPosition.BEFOREEND);
       break;
   }
 };
 
-const handleAddNewPoint = () => {
-  //убрать статистику
-  //открыть поездку
-  //показать форму
-  //заблокировать кнопку
-  //разблокировать после сохранения
-};
-
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-
-
 
 newPointNode.addEventListener('click', (event) => {
   event.preventDefault();
+  remove(StatisticsComponent);
+  tripPresenter.destroy();
+
+  tripPresenter.init();
+
+  siteMenuComponent.setMenuItem(MenuItem.TRIP);
+  filterPresenter.enableFilters();
+
   newPointNode.disabled = true;
   tripPresenter.createPoint(handleCloseNewPoint);
 });
