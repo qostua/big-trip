@@ -1,4 +1,5 @@
 import AbstractView from './abstract.js';
+
 import {SortType} from '../const.js';
 
 const SORTING_FILTERS = ['DAY', 'EVENT', 'TIME', 'PRICE', 'OFFERS'];
@@ -25,13 +26,13 @@ const createFilterList = (filters, currentSortType) => filters
   .map((filter) => createFilterItem(SortType[filter].name, SortType[filter].mod, SortType[filter].name === currentSortType))
   .join('');
 
-const createTripSortTemplate = (currentSortType) => (
+const createSortingTemplate = (currentSortType) => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     ${createFilterList(SORTING_FILTERS, currentSortType)}
   </form>`
 );
 
-export default class TripSort extends AbstractView {
+export default class Sorting extends AbstractView {
   constructor(currentSortType) {
     super();
 
@@ -41,16 +42,16 @@ export default class TripSort extends AbstractView {
   }
 
   getTemplate() {
-    return createTripSortTemplate(this._currentSortType);
-  }
-
-  _sortTypeChangeHandler(event) {
-    event.preventDefault();
-    this._callback.sortTypeChange(event.target.dataset.sortType);
+    return createSortingTemplate(this._currentSortType);
   }
 
   setSortTypeChangeHandler(callback) {
     this._callback.sortTypeChange = callback;
     this.getElement().addEventListener('input', this._sortTypeChangeHandler);
+  }
+
+  _sortTypeChangeHandler(event) {
+    event.preventDefault();
+    this._callback.sortTypeChange(event.target.dataset.sortType);
   }
 }
