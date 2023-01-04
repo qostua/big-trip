@@ -1,6 +1,16 @@
 export default class AbstractObserver {
   constructor() {
     this._observers = new Set();
+
+    this._isLoading = true;
+  }
+
+  get loadingStatus() {
+    return this._isLoading;
+  }
+
+  set loadingStatus(status) {
+    this._isLoading = status;
   }
 
   addObserver(observer) {
