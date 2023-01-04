@@ -1,25 +1,27 @@
-import {getFormatedDateStringFromDate} from '../utils/common.js';
-import {POINT_TYPES, TimeFormats} from '../const.js';
 import AbstractSmart from './abstract-smart.js';
-import flatpickr from 'flatpickr';
 
+import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
+import {getFormatedDateStringFromDate} from '../utils/time.js';
+import {POINT_TYPES, TimeFormats} from '../const.js';
 
 const BLANK_FORM_EDITING = {
   type: 'flight',
-  offers: null,
+  offers: [],
   destination: null,
   price: null,
   dateFrom: null,
   dateTo: null,
+  isFavorite: false,
 };
 
-const UpdateDataMods = {
+const UpdateDataMode = {
   UPDATE_ELEMENT: true,
   SAVE_ELEMENT: false,
 };
 
-const PointEditingMod = {
+const PointEditingMode = {
   NEW_POINT: 'NEW_POINT',
   EXIST_POINT: 'EXIST_POINT',
 };
@@ -128,18 +130,9 @@ const createDestination = (isDestination, description, pictures) => {
     ${createPointPhotos(pictures)}
   </section>`;
 };
-const createRollupBtn = (isNewPoint = true) => {
-  if (isNewPoint) {
-    return '';
-  }
-
-  return `<button class="event__rollup-btn" type="button">
-    <span class="visually-hidden">Open event</span>
-  </button>`;
-};
 
 const createPointEditingTemplate = (destinationsData = [], offersData = [], data = {}) => {
-  const {id, type, offers, destination, price, dateFrom, dateTo, isNewPoint, isDestination, isPrice, isDateFrom, isDateTo} = data;
+  const {id, type, offers, destination, price, dateFrom, dateTo, isNewPoint, isDestination, isPrice, isDateFrom, isDateTo, isDisabled, isSaving, isDeleting} = data;
 
   const isSubmitDisabled = !(isDestination && isPrice && isDateFrom && isDateTo);
 
@@ -150,7 +143,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
   const dateFromHumanize = (dateFrom) ? getFormatedDateStringFromDate(dateFrom, TimeFormats.HUMANIZE) : '';
   const dateToHumanize = (dateTo) ? getFormatedDateStringFromDate(dateTo, TimeFormats.HUMANIZE) : '';
 
-  const pointOffers = offersData.find((item) => item['type'] === type)['offers'];
+  const pointOffers = (offersData.length !== 0) ? offersData.find((item) => item['type'] === type)['offers'] : [];
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -160,7 +153,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -175,7 +168,7 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
           <label class="event__label  event__type-output" for="event-destination">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${name}" list="destination-list">
+          <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${name}" list="destination-list" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list">
             ${createDestinationList(destinationsData)}
           </datalist>
@@ -183,10 +176,10 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time">From</label>
-          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${dateFromHumanize}">
+          <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value="${dateFromHumanize}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time">To</label>
-          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${dateToHumanize}">
+          <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value="${dateToHumanize}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -194,15 +187,15 @@ const createPointEditingTemplate = (destinationsData = [], offersData = [], data
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[1-9]\\d*" name="event-price" value=${createPointPrice(isPrice, price)}>
+          <input class="event__input  event__input--price" id="event-price" type="text" pattern="[1-9]\\d*" name="event-price" value=${createPointPrice(isPrice, price)} ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
-        <button class="event__reset-btn" type="reset">${isNewPoint ? 'Cancel' : 'Delete'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        ${createResetBtn(isNewPoint, isDeleting)}
         ${createRollupBtn(isNewPoint)}
       </header>
       <section class="event__details">
-        ${createOffersList(pointOffers, offers, id)}
+        ${createOffers(pointOffers, offers, id, isDisabled)}
 
         ${createDestination(isDestination, description, pictures)}
       </section>
@@ -214,11 +207,11 @@ export default class PointEditing extends AbstractSmart {
   constructor(destinationsData = {}, offersData = [], point = BLANK_FORM_EDITING) {
     super();
 
-    this._data = PointEditing.parsePointToData(point);
     this._destinationsData = destinationsData;
     this._offersData = offersData;
+    this._data = PointEditing.parsePointToData(point);
 
-    this._pointEditingMod = this._data.isNewPoint ? PointEditingMod.NEW_POINT : PointEditingMod.EXIST_POINT;
+    this._pointEditingMod = this._data.isNewPoint ? PointEditingMode.NEW_POINT : PointEditingMode.EXIST_POINT;
 
     this._datapickerFrom = null;
     this._datapickerTo = null;
@@ -251,10 +244,23 @@ export default class PointEditing extends AbstractSmart {
     }
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setRollupBtnClickHandler(this._callback.rollupBtnClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
+  }
+
   reset(point) {
     this.updateData(
       PointEditing.parsePointToData(point),
     );
+  }
+
+  setFocus() {
+    this.getElement().querySelector('#event-destination').focus();
   }
 
   setFormSubmitHandler(callback) {
@@ -265,18 +271,6 @@ export default class PointEditing extends AbstractSmart {
       .addEventListener('submit', this._formSubmitHandler);
   }
 
-  setRollupBtnClickHandler(callback) {
-    if (this._pointEditingMod === PointEditingMod.NEW_POINT) {
-      return;
-    }
-
-    this._callback.rollupBtnClick = callback;
-    this
-      .getElement()
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this._rollupBtnClickHandler);
-  }
-
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
     this
@@ -285,13 +279,16 @@ export default class PointEditing extends AbstractSmart {
       .addEventListener('click', this._deleteClickHandler);
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setRollupBtnClickHandler(this._callback.rollupBtnClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setDeleteClickHandler(this._callback.deleteClick);
-    this._setDatepickerFrom();
-    this._setDatepickerTo();
+  setRollupBtnClickHandler(callback) {
+    if (this._pointEditingMod === PointEditingMode.NEW_POINT) {
+      return;
+    }
+
+    this._callback.rollupBtnClick = callback;
+    this
+      .getElement()
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this._rollupBtnClickHandler);
   }
 
   _setInnerHandlers() {
@@ -310,10 +307,13 @@ export default class PointEditing extends AbstractSmart {
       .querySelector('.event__input--price')
       .addEventListener('input', this._pricePointInputHandler);
 
-    this
+    const offerContainer = this
       .getElement()
-      .querySelector('.event__available-offers')
-      .addEventListener('input', this._offersPointInputHandler);
+      .querySelector('.event__available-offers');
+
+    if (offerContainer) {
+      offerContainer.addEventListener('input', this._offersPointInputHandler);
+    }
   }
 
   _setDatepickerFrom() {
@@ -352,14 +352,12 @@ export default class PointEditing extends AbstractSmart {
     );
   }
 
-  //handlers methods
-
   _typePointChangeHandler(event) {
     event.preventDefault();
     this.updateData({
       type: event.target.value,
       offers: null,
-    }, UpdateDataMods.UPDATE_ELEMENT);
+    }, UpdateDataMode.UPDATE_ELEMENT);
   }
 
   _cityPointInputHandler(event) {
@@ -369,7 +367,7 @@ export default class PointEditing extends AbstractSmart {
 
     const isDestination = Boolean(destination);
 
-    const isUpdate = (isDestination !== this._data.isDestination) ? UpdateDataMods.UPDATE_ELEMENT : UpdateDataMods.SAVE_ELEMENT;
+    const isUpdate = (isDestination !== this._data.isDestination) ? UpdateDataMode.UPDATE_ELEMENT : UpdateDataMode.SAVE_ELEMENT;
 
     destination = isDestination ? destination : {
       name: event.target.value,
@@ -384,7 +382,7 @@ export default class PointEditing extends AbstractSmart {
   }
 
   _dateFromChangeHandler([userDate]) {
-    const isUpdate = (Boolean(userDate) !== this._data.isDateFrom && this._data.isDateTo) ? UpdateDataMods.UPDATE_ELEMENT : UpdateDataMods.SAVE_ELEMENT;
+    const isUpdate = (Boolean(userDate) !== this._data.isDateFrom && this._data.isDateTo) ? UpdateDataMode.UPDATE_ELEMENT : UpdateDataMode.SAVE_ELEMENT;
 
     this.updateData({
       dateFrom: userDate ? userDate.toISOString() : null,
@@ -395,7 +393,7 @@ export default class PointEditing extends AbstractSmart {
   }
 
   _dateToChangeHandler([userDate]) {
-    const isUpdate = (Boolean(userDate) !== this._data.isDateTo && this._data.isDateFrom) ? UpdateDataMods.UPDATE_ELEMENT : UpdateDataMods.SAVE_ELEMENT;
+    const isUpdate = (Boolean(userDate) !== this._data.isDateTo && this._data.isDateFrom) ? UpdateDataMode.UPDATE_ELEMENT : UpdateDataMode.SAVE_ELEMENT;
 
     this.updateData({
       dateTo: userDate ? userDate.toISOString() : null,
@@ -410,7 +408,7 @@ export default class PointEditing extends AbstractSmart {
 
     const isPricePrew = this._data.isPrice;
     const isPrice = event.target.value !== '';
-    const isUpdate = (isPrice === isPricePrew) ? UpdateDataMods.SAVE_ELEMENT : UpdateDataMods.UPDATE_ELEMENT;
+    const isUpdate = (isPrice === isPricePrew) ? UpdateDataMode.SAVE_ELEMENT : UpdateDataMode.UPDATE_ELEMENT;
 
     event.preventDefault();
     this.updateData({
@@ -424,14 +422,14 @@ export default class PointEditing extends AbstractSmart {
     this._callback.formSubmit(PointEditing.parseDataToPoint(this._data));
   }
 
-  _rollupBtnClickHandler(event) {
-    event.preventDefault();
-    this._callback.rollupBtnClick();
-  }
-
   _deleteClickHandler(event) {
     event.preventDefault();
     this._callback.deleteClick(PointEditing.parseDataToPoint(this._data));
+  }
+
+  _rollupBtnClickHandler(event) {
+    event.preventDefault();
+    this._callback.rollupBtnClick();
   }
 
   _offersPointInputHandler(event) {
@@ -453,7 +451,7 @@ export default class PointEditing extends AbstractSmart {
 
     this.updateData({
       offers,
-    }, UpdateDataMods.SAVE_ELEMENT);
+    }, UpdateDataMode.SAVE_ELEMENT);
   }
 
   static parsePointToData(point) {
@@ -466,6 +464,9 @@ export default class PointEditing extends AbstractSmart {
         isPrice: Boolean(point.price),
         isDateFrom: Boolean(point.dateFrom),
         isDateTo: Boolean(point.dateTo),
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
       },
     );
   }
@@ -476,7 +477,11 @@ export default class PointEditing extends AbstractSmart {
     delete data.isNewPoint;
     delete data.isDestination;
     delete data.isPrice;
-    delete data.isDate;
+    delete data.isDateFrom;
+    delete data.isDateTo;
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
 
     return data;
   }

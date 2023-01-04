@@ -1,9 +1,6 @@
 import AbstractView from './abstract.js';
-import {
-  getDatesDifferencePerMs,
-  getFormatedDateStringFromDate,
-  msToHumanizeTime
-} from '../utils/common.js';
+
+import {getDatesDifferencePerMs, getFormatedDateStringFromDate, msToHumanizeTime} from '../utils/time.js';
 import {TimeFormats} from '../const.js';
 
 const createOfferItem = (offer) => (
@@ -25,7 +22,7 @@ const createOffersList = (isOffers, offers) => {
   );
 };
 
-const createPointTemplate = (pointData) => {
+const createPointTemplate = (pointData, isRollupDisabled) => {
   const {type, offers, destination, price, isFavorite, dateFrom, dateTo} = pointData;
 
   const name = destination.name;
@@ -65,7 +62,7 @@ const createPointTemplate = (pointData) => {
           <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
         </svg>
       </button>
-      <button class="event__rollup-btn" type="button">
+      <button class="event__rollup-btn" type="button" ${isRollupDisabled ? 'disabled' : ''}>
         <span class="visually-hidden">Open event</span>
       </button>
     </div>
@@ -73,16 +70,23 @@ const createPointTemplate = (pointData) => {
 };
 
 export default class Point extends AbstractView {
-  constructor(pointData) {
+  constructor(pointData, isPointDataLoading) {
     super();
-    this._pointData = pointData;
 
-    this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
+    this._pointData = pointData;
+    this._isPointDataLoading = isPointDataLoading;
+
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createPointTemplate(this._pointData);
+    return createPointTemplate(this._pointData, this._isPointDataLoading);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._favoriteClickHandler);
   }
 
   setRollupBtnClickHandler(callback) {
@@ -93,19 +97,14 @@ export default class Point extends AbstractView {
       .addEventListener('click', this._rollupBtnClickHandler);
   }
 
-  setFavoriteClickHandler(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._favoriteClickHandler);
+  _favoriteClickHandler(event) {
+    event.preventDefault();
+    this._callback.favoriteClick();
   }
 
   _rollupBtnClickHandler(event) {
     event.preventDefault();
     this._callback.rollupBtnClick();
-  }
-
-  _favoriteClickHandler(event) {
-    event.preventDefault();
-    this._callback.favoriteClick();
   }
 }
 

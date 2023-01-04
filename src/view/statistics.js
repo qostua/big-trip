@@ -1,11 +1,10 @@
 import AbstractSmart from './abstract-smart.js';
+
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {msToHumanizeTime} from '../utils/common.js';
-import {
-  getTypeNames,
-  getSortedTypes, getTypeValues, getSortedByCountTypes, getSortedByTimeTypes
-} from '../utils/statistics.js';
+
+import {msToHumanizeTime} from '../utils/time.js';
+import {getTypeNames, getSortedTypes, getTypeValues, getSortedByCountTypes, getSortedByTimeTypes} from '../utils/statistics.js';
 
 const BAR_HEIGHT = 55;
 
