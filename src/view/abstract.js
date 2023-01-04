@@ -11,7 +11,11 @@ export default class Abstract {
   }
 
   getTemplate() {
-    throw new Error('Abstract method not implemented: getTemplate.');
+    if (this instanceof Abstract) {
+      throw new Error('Abstract method not implemented: getTemplate.');
+    }
+
+    return '';
   }
 
   getElement() {
