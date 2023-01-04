@@ -108,3 +108,7 @@ api.getPoints()
     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
     btnNewPointPresenter.init();
   });
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
