@@ -770,6 +770,11 @@ main {
     transition: border-color 0.2s, transform 0.6s, -webkit-transform 0.6s; }
   .event__rollup-btn:hover::after {
     border-color: #0d8ae4; }
+  .event__rollup-btn:disabled {
+    opacity: 0.46;
+    cursor: default; }
+  .event__rollup-btn:disabled::after {
+    border-color: #000000; }
 
 .event--edit .event__rollup-btn {
   margin-left: auto; }
