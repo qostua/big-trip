@@ -36,42 +36,70 @@ const createPointTypesList = (currentType) => (
     >
     <label
       class="event__type-label event__type-label--${pointType}"
-      for="event-type-${pointType}-1">${pointType}
+      for="event-type-${pointType}-1"
+    >
+      ${pointType}
     </label>
   </div>`).join('')
 );
 const createPointPrice = (isPrice, price) => (isPrice) ? String(price) : '';
+const createResetBtn = (isNewPoint = true, isDeleting = true) => {
+  if (isNewPoint) {
+    return '<button class="event__reset-btn" type="reset">Cancel</button>';
+  }
+
+  return `<button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>`;
+};
+const createRollupBtn = (isNewPoint = true) => {
+  if (isNewPoint) {
+    return '';
+  }
+
+  return (
+    `<button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`
+  );
+};
+
+const createOfferItem = (offer, currentOffers, id) => {
+  const isCurrent = currentOffers && Boolean(currentOffers.find((currentOffer) => currentOffer.title === offer.title));
+  const name = offer.title.toLowerCase().split(' ').join('-');
+  const idOffer = `${name}-${id}`;
+
+  return `<div class="event__offer-selector">
+    <input
+        class="event__offer-checkbox visually-hidden"
+        id="${idOffer}"
+        type="checkbox"
+        name="event-offer-${name}"
+        ${isCurrent ? 'checked' : ''}
+        data-offer-title="${offer.title}"
+    >
+    <label class="event__offer-label" for="${idOffer}">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </label>
+  </div>`;
+};
 const createOffersList = (pointOffers, currentOffers, id) => {
-  const offers = pointOffers.map((offer) => {
-    const isCurrent = currentOffers && Boolean(currentOffers.find((currentOffer) => currentOffer.title === offer.title));
-    const name = offer.title.toLowerCase().split(' ').join('-');
-    const idOffer = `${name}-${id}`;
+  if (pointOffers.length === 0) {
+    return '';
+  }
 
-    return `<div class="event__offer-selector">
-      <input
-          class="event__offer-checkbox visually-hidden"
-          id="${idOffer}"
-          type="checkbox"
-          name="event-offer-${name}"
-          ${isCurrent ? 'checked' : ''}
-          data-offer-title="${offer.title}"
-      >
-      <label class="event__offer-label" for="${idOffer}">
-        <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`;
-  });
-
-  return `<section class="event__section  event__section--offers">
+  return pointOffers.map((offer) => createOfferItem(offer, currentOffers, id)).join('');
+};
+const createOffers = (pointOffers, currentOffers, id, isDisabled) => (
+  `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-    <div class="event__available-offers">
-      ${offers.join('')}
-    </div>
-  </section>`;
-};
+    <fieldset class="event__available-offers" ${isDisabled ? 'disabled' : ''}>
+      ${createOffersList(pointOffers, currentOffers, id)}
+    </fieldset>
+  </section>`
+);
+
 const createDestinationList = (destinationsData) => destinationsData
   .map((destination) => `<option value="${destination.name}"></option>`)
   .join('');
