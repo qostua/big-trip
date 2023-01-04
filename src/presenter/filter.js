@@ -1,28 +1,33 @@
-import {FilterType, UpdateType} from '../const.js';
-import {render, replace, remove, RenderPosition} from '../utils/render.js';
-
 import FilterView from '../view/filter.js';
 
+import {render, replace, remove, RenderPosition} from '../utils/render.js';
+import {filter} from '../utils/filter.js';
+import {FilterType, UpdateType} from '../const.js';
+
 export default class Filter {
-  constructor(filterContainer, filterModel) {
+  constructor(filterContainer, filterModel, pointsModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
+    this._pointsModel = pointsModel;
+
+    this._isDisabled = false;
 
     this._filterComponent = null;
-
-    this._filtersTypes = FilterType;
 
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
     this._filterModel.addObserver(this._handleModelEvent);
+    this._pointsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
-    const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
 
-    this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
+    const filters = this._getFilters();
+    const currentFilter = this._filterModel.getFilter();
+
+    this._filterComponent = new FilterView(filters, currentFilter, this._isDisabled);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
@@ -35,27 +40,32 @@ export default class Filter {
   }
 
   disableFilters() {
-    if (this._filterComponent === null) {
-      return;
-    }
-
-    const inputs = this._filterComponent.getElement().querySelectorAll('input');
-
-    inputs.forEach((input) => input.disabled = true);
+    this._isDisabled = true;
+    this.init();
   }
 
   enableFilters() {
-    if (this._filterComponent === null) {
-      return;
-    }
-
-    const inputs = this._filterComponent.getElement().querySelectorAll('input');
-
-    inputs.forEach((input) => input.disabled = false);
+    this._isDisabled = false;
+    this.init();
   }
 
-  _handleModelEvent() {
-    this.init();
+  _getFilters() {
+    const points = this._pointsModel.getPoints();
+
+    return [
+      {
+        type: FilterType.EVERYTHING,
+        isEmpty: false,
+      },
+      {
+        type: FilterType.PAST,
+        isEmpty: filter[FilterType.PAST](points).length === 0,
+      },
+      {
+        type: FilterType.FUTURE,
+        isEmpty: filter[FilterType.FUTURE](points).length === 0,
+      },
+    ];
   }
 
   _handleFilterTypeChange(filterType) {
@@ -66,7 +76,7 @@ export default class Filter {
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
-  _getFilters() {
-    return Object.values(this._filtersTypes);
+  _handleModelEvent() {
+    this.init();
   }
 }
