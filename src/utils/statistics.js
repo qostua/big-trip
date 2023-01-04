@@ -1,5 +1,5 @@
+import {getDatesDifferencePerMs} from './time.js';
 import {POINT_TYPES} from '../const.js';
-import {getDatesDifferencePerMs} from './common.js';
 
 const getTypesMap = () => {
   const typePrices = new Map();
@@ -7,7 +7,6 @@ const getTypesMap = () => {
 
   return typePrices;
 };
-
 const getSortedArrayFromMap = (map) => {
   const array = Array.from(map, ([name, value]) => ({ name, value }));
 
@@ -24,7 +23,6 @@ export const getSortedTypes = (points, sortParameter) => {
 
   return getSortedArrayFromMap(typePrices);
 };
-
 export const getSortedByCountTypes = (points) => {
   const typeCounts = getTypesMap();
 
@@ -35,7 +33,6 @@ export const getSortedByCountTypes = (points) => {
 
   return getSortedArrayFromMap(typeCounts);
 };
-
 export const getSortedByTimeTypes = (points) => {
   const typeTimes = getTypesMap();
 
@@ -48,5 +45,4 @@ export const getSortedByTimeTypes = (points) => {
 };
 
 export const getTypeNames = (types) => types.map((type) => type.name.toUpperCase());
-
 export const getTypeValues = (types) => types.map((type) => type.value);
