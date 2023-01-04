@@ -1,15 +1,17 @@
 import PointEditingView from '../view/point-item-editing.js';
+
 import {render, remove, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
-export default class NewPoint {
+export default class NewPointEditing {
   constructor(pointsContainer, offers, destinations, changeData) {
     this._pointsContainer = pointsContainer;
-    this._destinations = destinations;
     this._offersData = offers;
+    this._destinations = destinations;
     this._changeData = changeData;
 
     this._destroyCallback = null;
+
     this._pointEditingComponent = null;
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -30,8 +32,7 @@ export default class NewPoint {
     this._pointEditingComponent.setDeleteClickHandler(this._handleCanselClick);
 
     render(this._pointsContainer, this._pointEditingComponent, RenderPosition.AFTERBEGIN);
-
-    this._pointEditingComponent.getElement().querySelector('#event-destination').focus();
+    this._pointEditingComponent.setFocus();
 
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
@@ -51,17 +52,23 @@ export default class NewPoint {
     document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
-  _handleFormSubmit(point) {
-    this._changeData(
-      UserAction.ADD_POINT,
-      UpdateType.MINOR,
-      point,
-    );
-    this.destroy();
+  setSaving() {
+    this._pointEditingComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
   }
 
-  _handleCanselClick() {
-    this.destroy();
+  setAborting() {
+    const resetFormState = () => {
+      this._pointEditingComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._pointEditingComponent.shake(resetFormState);
   }
 
   _escKeyDownHandler(evt) {
@@ -69,5 +76,17 @@ export default class NewPoint {
       evt.preventDefault();
       this.destroy();
     }
+  }
+
+  _handleFormSubmit(point) {
+    this._changeData(
+      UserAction.ADD_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  }
+
+  _handleCanselClick() {
+    this.destroy();
   }
 }
