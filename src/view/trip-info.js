@@ -1,6 +1,6 @@
 import AbstractView from './abstract.js';
-import {getDatesDifferencePerMs, getFormatedDateStringFromDate} from '../utils/common.js';
-import {TimeFormats} from '../const.js';
+
+import {getDatesDifferencePerMs, getHumanizeDateRange} from '../utils/time.js';
 
 const createCitiesTitle = (cities) => {
   if (cities.length > 3) {
@@ -18,12 +18,7 @@ const createDateRange = (dates) => {
   const firstDate = sortDates[0];
   const lastDate = sortDates[sortDates.length - 1];
 
-  const firstMonth = getFormatedDateStringFromDate(firstDate, TimeFormats.ONLY_MONTH);
-  const lastMonth = getFormatedDateStringFromDate(lastDate, TimeFormats.ONLY_MONTH);
-
-  return (firstMonth === lastMonth)
-    ? `${getFormatedDateStringFromDate(firstDate, TimeFormats.DAY)} - ${getFormatedDateStringFromDate(lastDate, TimeFormats.ONLY_DAY)}`
-    : `${getFormatedDateStringFromDate(firstDate, TimeFormats.DAY)} - ${getFormatedDateStringFromDate(lastDate, TimeFormats.DAY)}`;
+  return getHumanizeDateRange(firstDate, lastDate);
 };
 
 const createTripInfoTemplate = (cities, dates) => {
@@ -42,6 +37,7 @@ const createTripInfoTemplate = (cities, dates) => {
 export default class TripInfo extends AbstractView {
   constructor(cities, dates) {
     super();
+
     this._cities = cities;
     this._dates = dates;
   }
