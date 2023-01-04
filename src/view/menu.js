@@ -1,9 +1,14 @@
 import AbstractView from './abstract.js';
+
+import {remove, render, replace, RenderPosition} from '../utils/render.js';
 import {MenuItem} from '../const.js';
-import {remove, render, RenderPosition, replace} from '../utils/render.js';
 
 const createMenuItemTemplate = (item, isActive) => (
-  `<a class="trip-tabs__btn  ${isActive ? 'trip-tabs__btn--active' : ''}" href="#" data-item="${item.toLowerCase()}">
+  `<a
+    href="#"
+    class="trip-tabs__btn ${isActive ? 'trip-tabs__btn--active' : ''}"
+    data-item="${item.toLowerCase()}"
+  >
     ${item}
   </a>`
 );
@@ -13,9 +18,12 @@ const createItemListTemplate = (items) => items
   .join('');
 
 const createSiteMenuTemplate = () => (
-  `<nav class="trip-controls__trip-tabs  trip-tabs">
-    ${createItemListTemplate(Object.values(MenuItem))}
-  </nav>`
+  `<div class="trip-controls__navigation">
+    <h2 class="visually-hidden">Switch trip view</h2>
+    <nav class="trip-controls__trip-tabs  trip-tabs">
+      ${createItemListTemplate(Object.values(MenuItem))}
+    </nav>
+  </div>`
 );
 
 export default class SiteMenu extends AbstractView {
@@ -47,10 +55,10 @@ export default class SiteMenu extends AbstractView {
     return createSiteMenuTemplate();
   }
 
-  _menuClickHandler(event) {
-    event.preventDefault();
-    const menuItem = event.target.closest('.trip-tabs__btn');
-    this._callback.menuClickHandler(menuItem.dataset.item);
+  setMenuItem(menuItem) {
+    this._resetMenu();
+
+    this.getElement().querySelector(`.trip-tabs__btn[data-item="${menuItem}"]`).classList.add('trip-tabs__btn--active');
   }
 
   setMenuClickHandler(callback) {
@@ -58,14 +66,14 @@ export default class SiteMenu extends AbstractView {
     this.getElement().addEventListener('click', this._menuClickHandler);
   }
 
-  setMenuItem(menuItem) {
-    this._resetMenu();
-
-    this.getElement().querySelector(`.trip-tabs__btn[data-item="${menuItem}"]`).classList.add('trip-tabs__btn--active');
-  }
-
   _resetMenu() {
     const menuItems = this.getElement().querySelectorAll('.trip-tabs__btn');
     menuItems.forEach((item) => item.classList.remove('trip-tabs__btn--active'));
+  }
+
+  _menuClickHandler(event) {
+    event.preventDefault();
+    const menuItem = event.target.closest('.trip-tabs__btn');
+    this._callback.menuClickHandler(menuItem.dataset.item);
   }
 }
