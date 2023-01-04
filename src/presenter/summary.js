@@ -1,5 +1,6 @@
 import TripInfoView from '../view/trip-info.js';
 import TripCostView from '../view/trip-cost.js';
+
 import {render, remove, RenderPosition} from '../utils/render.js';
 
 export default class Summary {
@@ -16,50 +17,37 @@ export default class Summary {
   }
 
   init() {
-    const prevTripInfoComponent = this._tripInfoComponent;
-    const prevTripCostComponent = this._tripCostComponent;
-
-    this._tripInfoComponent = new TripInfoView(this._getCities(), this._getDates());
-    this._tripCostComponent = new TripCostView(this._getCost());
-
-    if (prevTripInfoComponent === null && prevTripCostComponent === null) {
-      this._renderSummary();
-      return;
-    }
-
-    remove(prevTripInfoComponent);
-    remove(prevTripCostComponent);
-
+    this._clearSummary();
     this._renderSummary();
   }
 
   _renderSummary() {
-    const points = this._pointsModel.points;
+    const points = this._pointsModel.getPoints();
     const pointCount = points.length;
 
     if (pointCount === 0) {
       return;
     }
 
+    this._tripInfoComponent = new TripInfoView(this._getCities(), this._getDates());
+    this._tripCostComponent = new TripCostView(this._getCost());
+
     render(this._summaryContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
     render(this._tripInfoComponent, this._tripCostComponent, RenderPosition.BEFOREEND);
   }
 
-  _handleModelEvent() {
-    this.init();
-  }
+  _clearSummary() {
+    if (this._tripInfoComponent === null && this._tripCostComponent === null) {
+      return;
+    }
 
-  _getCost() {
-    const points = this._pointsModel.points;
-
-    return points.reduce((prevPointsPrice, point) => {
-      const offersPrice = point.offers.reduce((prevOffersPrice, offer) => prevOffersPrice + offer.price, 0);
-      return prevPointsPrice + point.price + offersPrice;
-    }, 0);
+    remove(this._tripInfoComponent);
+    remove(this._tripCostComponent);
   }
 
   _getCities() {
-    const points = this._pointsModel.points;
+    const points = this._pointsModel.getPoints();
+
     const cities = new Set();
 
     points.forEach((point) => cities.add(point.destination.name));
@@ -68,8 +56,21 @@ export default class Summary {
   }
 
   _getDates() {
-    const points = this._pointsModel.points;
+    const points = this._pointsModel.getPoints();
 
     return points.map((point) => point.dateFrom);
+  }
+
+  _getCost() {
+    const points = this._pointsModel.getPoints();
+
+    return points.reduce((prevPointsPrice, point) => {
+      const offersPrice = point.offers.reduce((prevOffersPrice, offer) => prevOffersPrice + offer.price, 0);
+      return prevPointsPrice + point.price + offersPrice;
+    }, 0);
+  }
+
+  _handleModelEvent() {
+    this.init();
   }
 }
