@@ -12,7 +12,7 @@ import FilterPresenter from './presenter/filter.js';
 import SummaryPresenter from './presenter/summary.js';
 import BtnNewPointPresenter from './presenter/btn-new-point.js';
 
-import Api from './api.js';
+import Api from './api/api.js';
 
 import {remove, render, RenderPosition} from './utils/render.js';
 import {MenuItem, UpdateType} from './const.js';
