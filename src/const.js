@@ -20,6 +20,7 @@ export const TimeFormats = {
   DATA: 'YYYY-MM-DDTHH:mm:ss.ms[Z]',
   HUMANIZE: 'DD/MM/YY HH:mm',
   DATE: 'YYYY-MM-DD',
+  HUM_DATE: 'MMM D, YYYY',
   DAY: 'MMM D',
   TIME: 'HH:mm',
   ONLY_MONTH: 'M',
