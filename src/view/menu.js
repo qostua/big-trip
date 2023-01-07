@@ -73,6 +73,10 @@ export default class SiteMenu extends AbstractView {
 
   _menuClickHandler(event) {
     event.preventDefault();
+    if (event.target.classList.contains('trip-tabs__btn--active')) {
+      return;
+    }
+
     const menuItem = event.target.closest('.trip-tabs__btn');
     this._callback.menuClickHandler(menuItem.dataset.item);
   }
