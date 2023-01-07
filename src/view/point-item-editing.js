@@ -110,7 +110,7 @@ const createPointPhotos = (pictures = []) => {
     return '';
   }
 
-  const photesList = pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('');
+  const photesList = pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}" loading="lazy">`).join('');
 
   return `<div class="event__photos-container">
     <div class="event__photos-tape">
