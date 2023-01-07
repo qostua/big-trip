@@ -2,6 +2,8 @@ import PointView from '../view/point-item.js';
 import PointEditingView from '../view/point-item-editing.js';
 
 import {remove, render, replace, RenderPosition} from '../utils/render.js';
+import {isOnline} from '../utils/common.js';
+import {toast} from '../utils/toast.js';
 import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
@@ -31,8 +33,8 @@ export default class Point {
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._replacePointToForm = this._replacePointToForm.bind(this);
-    this._replaceFormToPoint = this._replaceFormToPoint.bind(this);
-    this._rollupBtnClickHandler = this._rollupBtnClickHandler.bind(this);
+    this._rollupOpenBtnClickHandler = this._rollupOpenBtnClickHandler.bind(this);
+    this._rollupCloseBtnClickHandler = this._rollupCloseBtnClickHandler.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
@@ -48,11 +50,11 @@ export default class Point {
     this._pointEditingComponent = new PointEditingView(this._destinations, this._offersData, this._point);
 
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._pointComponent.setRollupBtnClickHandler(this._replacePointToForm);
+    this._pointComponent.setRollupBtnClickHandler(this._rollupOpenBtnClickHandler);
 
     this._pointEditingComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditingComponent.setDeleteClickHandler(this._handleDeleteClick);
-    this._pointEditingComponent.setRollupBtnClickHandler(this._rollupBtnClickHandler);
+    this._pointEditingComponent.setRollupBtnClickHandler(this._rollupCloseBtnClickHandler);
 
     if (prevPointComponent === null || prevPointEditingComponent === null) {
       render(this._pointListContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -64,7 +66,7 @@ export default class Point {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._pointEditingComponent, prevPointEditingComponent);
+      replace(this._pointComponent, prevPointEditingComponent);
       this._mode = Mode.DEFAULT;
     }
 
@@ -157,13 +159,27 @@ export default class Point {
     );
   }
 
-  _rollupBtnClickHandler() {
+  _rollupOpenBtnClickHandler() {
+    if (!isOnline()) {
+      toast('You can\'t edit point offline');
+      return;
+    }
+
+    this._replacePointToForm();
+  }
+
+  _rollupCloseBtnClickHandler() {
     this._pointEditingComponent.reset(this._point);
     this._replaceFormToPoint();
     document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
   _handleFormSubmit(point) {
+    if (!isOnline()) {
+      toast('You can\'t save point offline');
+      return;
+    }
+
     const updateType = (
       point.dateFrom !== this._point.dateFrom ||
       point.dateTo !== this._point.dateTo ||
@@ -178,6 +194,11 @@ export default class Point {
   }
 
   _handleDeleteClick(point) {
+    if (!isOnline()) {
+      toast('You can\'t delete point offline');
+      return;
+    }
+
     this._changeData(
       UserAction.DELETE_POINT,
       UpdateType.MINOR,
