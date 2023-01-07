@@ -355,7 +355,7 @@ export default class PointEditing extends AbstractSmart {
     event.preventDefault();
     this.updateData({
       type: event.target.value,
-      offers: null,
+      offers: [],
     }, UpdateDataMode.UPDATE_ELEMENT);
   }
 
