@@ -54,6 +54,7 @@ export default class Trip {
   destroy() {
     this._clearTrip({resetSortType: true});
     remove(this._tripComponent);
+    remove(this._sortingComponent);
 
     this._pointsModel.removeObserver(this._handleModelEvent);
     this._filtersModel.removeObserver(this._handleModelEvent);
