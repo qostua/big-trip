@@ -85,22 +85,21 @@ const createOfferItem = (offer, currentOffers, id) => {
     </label>
   </div>`;
 };
-const createOffersList = (pointOffers, currentOffers, id) => {
+const createOffersList = (pointOffers, currentOffers, id) => pointOffers.map((offer) => createOfferItem(offer, currentOffers, id)).join('');
+
+const createOffers = (pointOffers, currentOffers, id, isDisabled) => {
   if (pointOffers.length === 0) {
     return '';
   }
 
-  return pointOffers.map((offer) => createOfferItem(offer, currentOffers, id)).join('');
-};
-const createOffers = (pointOffers, currentOffers, id, isDisabled) => (
-  `<section class="event__section  event__section--offers">
+  return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <fieldset class="event__available-offers" ${isDisabled ? 'disabled' : ''}>
       ${createOffersList(pointOffers, currentOffers, id)}
     </fieldset>
-  </section>`
-);
+  </section>`;
+};
 
 const createDestinationList = (destinationsData) => destinationsData
   .map((destination) => `<option value="${destination.name}"></option>`)
