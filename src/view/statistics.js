@@ -19,7 +19,7 @@ const renderChart = (ctx, sortedTypes, formatter, text) => (
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
-        minBarLength: 50,
+        minBarLength: 70,
         barThickness: 44,
       }],
     },
