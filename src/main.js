@@ -12,15 +12,28 @@ import FilterPresenter from './presenter/filter.js';
 import SummaryPresenter from './presenter/summary.js';
 import BtnNewPointPresenter from './presenter/btn-new-point.js';
 
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 import Api from './api/api.js';
 
 import {remove, render, RenderPosition} from './utils/render.js';
+import {isOnline} from './utils/common.js';
+import {toast} from './utils/toast.js';
 import {MenuItem, UpdateType} from './const.js';
 
-const AUTHORIZATION = 'Basic Nyfks9qr8gjdRAaG';
+const AUTHORIZATION = 'Basic Nyfks9qs8sedRA5G';
 const END_POINT = 'https://15.ecmascript.pages.academy/big-trip';
+const STORE_PREFIX = 'big-trip-localstorage';
+const STORE_VER = 'v1';
+const POINTS_STORE_NAME = `points-${STORE_PREFIX}-${STORE_VER}`;
+const OFFERS_STORE_NAME = `odders-${STORE_PREFIX}-${STORE_VER}`;
+const DESTINATIONS_STORE_NAME = `destinations-${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const pointsStore = new Store(POINTS_STORE_NAME, window.localStorage);
+const offersStore = new Store(OFFERS_STORE_NAME, window.localStorage);
+const destinationsStore = new Store(DESTINATIONS_STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, pointsStore, offersStore, destinationsStore);
 
 const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
@@ -32,7 +45,7 @@ const headerInnerNode = document.querySelector('.trip-main');
 const tripControlsNode = headerInnerNode.querySelector('.trip-controls');
 const pageMainContainerNode = document.querySelector('.page-main__container');
 
-const tripPresenter = new TripPresenter(pageMainContainerNode, pointsModel, offersModel, descriptionsModel, filtersModel, api);
+const tripPresenter = new TripPresenter(pageMainContainerNode, pointsModel, offersModel, descriptionsModel, filtersModel, apiWithProvider);
 const siteMenuComponent = new SiteMenuView(tripControlsNode);
 siteMenuComponent.init();
 const filterPresenter = new FilterPresenter(tripControlsNode, filtersModel, pointsModel);
@@ -44,6 +57,7 @@ const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TRIP:
       remove(StatisticsComponent);
+      tripPresenter.destroy();
 
       tripPresenter.init();
 
@@ -52,6 +66,7 @@ const handleSiteMenuClick = (menuItem) => {
 
       break;
     case MenuItem.STATS:
+      remove(StatisticsComponent);
       tripPresenter.destroy();
 
       siteMenuComponent.setMenuItem(MenuItem.STATS);
@@ -64,7 +79,12 @@ const handleSiteMenuClick = (menuItem) => {
 };
 
 const handleBtnNewPointClick = () => {
-  newPointModel.disable();
+  if (!isOnline()) {
+    toast('You can\'t create new task offline');
+
+    return;
+  }
+
   remove(StatisticsComponent);
 
   tripPresenter.destroy();
@@ -73,6 +93,7 @@ const handleBtnNewPointClick = () => {
   siteMenuComponent.setMenuItem(MenuItem.TRIP);
   filterPresenter.enableFilters();
 
+  newPointModel.disable();
   tripPresenter.createPoint(() => newPointModel.enable());
 };
 
@@ -82,7 +103,7 @@ tripPresenter.init();
 filterPresenter.init();
 summaryPresenter.init();
 
-api.getOffers()
+apiWithProvider.getOffers()
   .then((offers) => {
     offersModel.setOffers(UpdateType.MAJOR, offers);
   })
@@ -90,14 +111,15 @@ api.getOffers()
     offersModel.setOffers(UpdateType.MAJOR, []);
   });
 
-api.getDestinations()
+apiWithProvider.getDestinations()
   .then((destinations) => {
     descriptionsModel.setDestinations(UpdateType.MAJOR, destinations);
-  }).catch(() => {
+  })
+  .catch(() => {
     descriptionsModel.setDestinations(UpdateType.MAJOR, []);
   });
 
-api.getPoints()
+apiWithProvider.getPoints()
   .then((points) => {
     pointsModel.setPoints(UpdateType.MAJOR, points);
     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
@@ -111,4 +133,13 @@ api.getPoints()
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  document.title = document.title.replace(' [offline]', '');
+  apiWithProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  document.title += ' [offline]';
 });
