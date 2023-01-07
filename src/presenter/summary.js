@@ -2,6 +2,7 @@ import TripInfoView from '../view/trip-info.js';
 import TripCostView from '../view/trip-cost.js';
 
 import {render, remove, RenderPosition} from '../utils/render.js';
+import {compareDatePoints} from '../utils/point.js';
 
 export default class Summary {
   constructor(summaryContainer, pointsModel) {
@@ -47,10 +48,11 @@ export default class Summary {
 
   _getCities() {
     const points = this._pointsModel.getPoints();
+    const sortedPoints = points.sort(compareDatePoints);
 
-    const cities = new Set();
+    const cities = [];
 
-    points.forEach((point) => cities.add(point.destination.name));
+    sortedPoints.forEach((point) => cities.push(point.destination.name));
 
     return Array.from(cities);
   }
